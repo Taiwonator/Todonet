@@ -1,0 +1,40 @@
+$tablet-width: 768px;
+
+@mixin tablet {
+  @media (max-width: #{$tablet-width}) {
+    @content;
+  }
+}
+
+.login-page-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    > button {
+        align-self: baseline;
+        position: absolute;
+        left: 2vw;
+        top: 2vw;
+
+        @include tablet {
+            left: 4vw;
+            top: 4vw;
+        }
+    }
+
+    header {
+
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        width: 25%;
+
+        @include tablet {
+            width: 95%;
+        }
+    }
+}

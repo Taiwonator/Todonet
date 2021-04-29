@@ -8,14 +8,17 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
+import { DetailsContext } from './controllers/details-context';
 
 class App extends Component {
   
   constructor(props) {
     super(props)
-  }
-
-  componentDidMount() {
+    this.state = {
+      details: {
+        name: 'dummy'
+      }
+    }
   }
 
   render() {
@@ -26,18 +29,23 @@ class App extends Component {
 
             <Route exact path="/" 
                    render={(props) => (
-                    <LandingPage {...props} switchTo={this.switchTo} switchBack={this.switchBack} />
+                    <LandingPage {...props} />
                    )} />
 
-            <Route path="/login" 
-                   render={(props) => (
-                    <LoginPage {...props} switchTo={this.switchTo} switchBack={this.switchBack} />
-                   )} />
+            <DetailsContext.Provider value={ this.state.details }>
 
-            <Route path="/signup" 
-                   render={(props) => (
-                    <SignupPage {...props} switchTo={this.switchTo} switchBack={this.switchBack} />
-                   )} /> 
+              <Route path="/login" 
+                    render={(props) => (
+                      <LoginPage {...props} />
+                    )} />
+
+              <Route path="/signup" 
+                    render={(props) => (
+                      <SignupPage {...props} />
+                    )} /> 
+            
+            </DetailsContext.Provider>
+
 
           </Switch>
 

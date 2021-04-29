@@ -7,10 +7,34 @@ import Input from '../../public/Input/Input';
 import Button from '../../public/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { DetailsContext } from '../../controllers/details-context';
 
 class LoginPage extends Component {
     constructor(props) {
         super(props)
+        this.state = {
+            email: '', 
+            password: '', 
+            colors: {
+                active: '#9639B3', 
+                inactive: '#CCCCCC',
+                error: 'red'
+            }
+        }
+    }
+
+    handleEmailChange = (e) => {
+        const email = e.target.value;
+        this.setState(prevState => ({
+          ...prevState, email
+        }))
+    }
+
+    handlePasswordChange = (e) => {
+        const password = e.target.value;
+        this.setState(prevState => ({
+            ...prevState, password
+        }))
     }
 
     goBack() {
@@ -18,11 +42,13 @@ class LoginPage extends Component {
     }
 
     render() {
+        const details = this.context;
+        const inputsFilled = (this.state.email.length !== 0 && this.state.password.length !== 0)
 
         return (
             <div className="login-page-container">
                 <button onClick={ () => this.goBack() }><FontAwesomeIcon icon={faArrowLeft} color='#FABA34' size="2x"/></button>
-                <Illustration id={1} width={300} height={300}/>
+                <Illustration id={1} width={300} height={250}/>
                 <header>
                     <Title header="Welcome Back."  
                         headerColor="black"
@@ -36,24 +62,32 @@ class LoginPage extends Component {
                 <form>
                     <Input type="text"
                         placeholder="Email"
-                        value="Dummy@gmail.com"
-                        color="#9639B3"
+                        value={this.state.email}
+                        onChange={this.handleEmailChange}
+                        colors={ this.state.colors }
+                        empty={ (this.state.email.length === 0) ? true  : false}
                             />
                     <Input type="Password"
                         placeholder="Password"
-                        value=""
-                        color="#CCCCCC"
+                        value={this.state.password}
+                        onChange={this.handlePasswordChange}
+                        colors={ this.state.colors }
+                        empty={ (this.state.password.length === 0) ? true  : false}
                             />
                     <Button text="LOG IN" 
                             bgColor="#FABA34" 
                             textColor="white" 
                             textAlign="center"
                             borderColor="white"
+                            onClick={ () => console.log('login') }
+                            disabled={ !inputsFilled }
                             />
                 </form>
             </div>
         )
     }
 }
+
+LoginPage.contextType = DetailsContext;
 
 export default withRouter(LoginPage)

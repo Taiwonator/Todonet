@@ -9,26 +9,41 @@ class TopNav extends Component {
     super(props);
    }
 
+//    componentWillMount() {
+//     this.unlisten = this.props.history.listen((location, action) => {
+//         console.log(window.location.pathname);
+//         this.props.selectIcon(this.props.routeToIcon(window.location.pathname))
+//     });
+//   }
+//   componentWillUnmount() {
+//       this.unlisten();
+//   }
+
    openPage(page, icon) {
-        this.props.selectIcon(icon);
         this.props.history.push(page)
+        // this.props.selectIcon(this.props.routeToIcon(window.location.pathname))
+
     }
 
     goBack() {
-        this.openPage('/app', 'plus')
+        this.props.history.goBack();
+        // this.props.selectIcon(this.props.routeToIcon(window.location.pathname))
     }
 
+
    render() {
+    // console.log(window.location.pathname);
+
        let element;
        if(this.props.isSelected('cog')) {
         element = <button onClick={ () => this.goBack() }><FontAwesomeIcon icon={faTimesCircle} color='red' size="3x"/></button>
        } else {
-        element = <button onClick={ () => this.openPage("/settings", "cog") }><FontAwesomeIcon icon={faCog} color='#27272E' size="3x"/></button>
+        element = <button onClick={ () => this.openPage("/app/settings", "cog") }><FontAwesomeIcon icon={faCog} color='#27272E' size="3x"/></button>
        }
 
        return ( 
         <div className="top-nav">
-            { element }
+            {element}
         </div>      
        )
    }

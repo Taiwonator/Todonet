@@ -21,48 +21,67 @@ class Wrapper extends Component {
     super(props);
     this.state = {
         selectedIcon: '', 
-        prevSelectedIcon: ''
     }
+   }
+
+   routeToIcon = (route) => {
+        switch(route) {
+            case '/app': 
+                return 'plus';
+            case '/app/home': 
+                return 'home';
+            case '/app/friends': 
+                return 'search';
+            case '/app/activities': 
+                return 'heart';
+            case '/app/profile': 
+                return 'user';
+            case '/app/settings': 
+                return 'cog';
+            default:
+                return 'user';
+        }
    }
 
    isSelected = (icon) => (icon === this.state.selected)
 
-   selectIcon = (icon) => this.setState((prevState) => ({ prevSelectedIcon: prevState.selectedIcon, selected: icon }))
+   selectIcon = (icon) => this.setState(({ selected: icon }))
 
    render() {
+      
        return ( 
            <Router>
-           <TopNav isSelected={this.isSelected} selectIcon={this.selectIcon} prevSelectedIcon={this.state.prevSelectedIcon} />
+           <TopNav isSelected={this.isSelected} selectIcon={this.selectIcon} routeToIcon={this.routeToIcon}/>
            <div className="wrapper-container">
                
                    <Switch>
 
-                        <Route exact={true} path="/app" 
+                        <Route exact path="/app" 
                         render={(props) => (
                             <TodoPage {...props} />
                         )} /> 
 
-                        <Route path="/friends" 
+                        <Route path="/app/friends" 
                         render={(props) => (
                             <FriendsPage {...props} />
                         )} /> 
 
-                        <Route path="/activities" 
+                        <Route path="/app/activities" 
                         render={(props) => (
                             <ActivitiesPage {...props} />
                         )} /> 
 
-                        <Route path="/profile" 
+                        <Route path="/app/profile" 
                         render={(props) => (
                             <ProfilePage {...props} />
                         )} /> 
 
-                        <Route path="/home" 
+                        <Route path="/app/home" 
                         render={(props) => (
                             <HomePage {...props} />
                         )} /> 
 
-                        <Route path="/settings" 
+                        <Route path="/app/settings" 
                         render={(props) => (
                         <SettingsPage {...props} />
                         )} />
@@ -70,7 +89,7 @@ class Wrapper extends Component {
                    </Switch>
                
            </div>
-           <BottomNav isSelected={this.isSelected} selectIcon={this.selectIcon} />
+           <BottomNav isSelected={this.isSelected} selectIcon={this.selectIcon} routeToIcon={this.routeToIcon}/>
            </Router>
        )
    }

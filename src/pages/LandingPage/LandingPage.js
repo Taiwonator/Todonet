@@ -3,7 +3,6 @@ import { withRouter } from 'react-router-dom';
 import Button from '../../public/Button/Button.js';
 import Title from '../../public/Title/Title.js';
 import './LandingPage.scss';
-import { callEvent } from '../../controllers/EventHandler.js';
 
 class LandingPage extends Component {
 
@@ -11,11 +10,6 @@ class LandingPage extends Component {
       super(props)
     }
 
-    eventFunc = (event) => {
-        callEvent(event);
-    }
-
-    // click button - want to go login - update stack with login
 
     openPage(page) {
       this.props.history.push(page)

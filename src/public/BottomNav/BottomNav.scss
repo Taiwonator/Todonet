@@ -1,0 +1,28 @@
+.bottom-nav-container {
+    position: absolute;
+    width: 100vw;
+    height: 100px;
+    bottom: 0;
+    left: 0;
+    background-color: #27272E;
+    display: flex;
+    justify-content: space-around;
+
+    button {
+        flex: 1;
+
+        &:hover {
+            filter: unset;
+        }
+
+        svg {
+            transition: all .1s ease-in-out;
+        }
+        
+        &:nth-child(3) {
+            background-color: #4e3b5f;
+        }
+    }
+
+    
+}

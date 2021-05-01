@@ -7,12 +7,13 @@ import Input from '../../public/Input/Input';
 import Button from '../../public/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { eventCall } from '../../controllers/EventHandler';
 
 class SignupPage extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            name: '',
+            fullname: '',
             email: '', 
             password: '', 
             password2: '',
@@ -25,9 +26,9 @@ class SignupPage extends Component {
     }
 
     handleNameChange = (e) => {
-        const name = e.target.value;
+        const fullname = e.target.value;
         this.setState(prevState => ({
-          ...prevState, name
+          ...prevState, fullname
         }))
     }
 
@@ -57,10 +58,20 @@ class SignupPage extends Component {
         this.props.history.goBack();
     }
 
+    createUser() {
+        eventCall({
+            type: 'DETAILS', 
+            name: 'create_user', 
+            email: this.state.email, 
+            password: this.state.password, 
+            fullname: this.state.fullname
+        })
+    }
+
     render() {
         const passwordsMatch = (this.state.password === this.state.password2);
 
-        const inputsFilled = (this.state.name.length !== 0 &&
+        const inputsFilled = (this.state.fullname.length !== 0 &&
                               this.state.email.length !== 0 && 
                               this.state.password.length !== 0 &&
                               this.state.password2.length !== 0 && 
@@ -83,10 +94,10 @@ class SignupPage extends Component {
                 <form>
                     <Input type="text"
                         placeholder="Full Name"
-                        value={ this.state.name }
+                        value={ this.state.fullname }
                         onChange={this.handleNameChange}
                         colors={ this.state.colors }
-                        empty={ (this.state.name.length === 0) ? true  : false}
+                        empty={ (this.state.fullname.length === 0) ? true  : false}
                             />
                     <Input type="text"
                         placeholder="Email"
@@ -117,7 +128,7 @@ class SignupPage extends Component {
                             textColor="white" 
                             textAlign="center"
                             borderColor="white"
-                            onClick={ () => console.log('sign in') }
+                            onClick={ () => this.createUser() }
                             disabled={ !inputsFilled }
                             />
                 </form>

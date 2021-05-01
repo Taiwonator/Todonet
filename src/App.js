@@ -9,6 +9,7 @@ import {
   Route,
 } from "react-router-dom";
 import { DetailsContext } from './controllers/details-context';
+import Wrapper from './pages/Wrapper/Wrapper';
 
 class App extends Component {
   
@@ -31,6 +32,11 @@ class App extends Component {
                    render={(props) => (
                     <LandingPage {...props} />
                    )} />
+
+            <Route path="/app" 
+                   render={(props) => (
+                    <Wrapper {...props} />
+                   )} />  
 
             <DetailsContext.Provider value={ this.state.details }>
 

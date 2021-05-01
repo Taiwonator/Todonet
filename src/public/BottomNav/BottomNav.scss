@@ -1,3 +1,11 @@
+$tablet-width: 768px;
+
+@mixin tablet {
+  @media (max-width: #{$tablet-width}) {
+    @content;
+  }
+}
+
 .bottom-nav-container {
     position: absolute;
     width: 100vw;
@@ -8,6 +16,10 @@
     display: flex;
     justify-content: space-around;
 
+    @include tablet {
+        height: 75px;
+    }
+
     button {
         flex: 1;
 
@@ -17,10 +29,18 @@
 
         svg {
             transition: all .1s ease-in-out;
+
+            @include tablet {
+                height: 25px;
+            }
         }
-        
+
         &:nth-child(3) {
-            background-color: #4e3b5f;
+            svg {
+                @include tablet {
+                    height: 35px;
+                } 
+            }
         }
     }
 

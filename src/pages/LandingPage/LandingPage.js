@@ -19,7 +19,7 @@ class LandingPage extends Component {
 
       return (
         <div className="landing-page-container">
-            <header>
+            <header onClick={ () => this.openPage('/app') }>
                 <Title header="Todonet."  
                       headerColor="white"
                       headerFontSize="50px"

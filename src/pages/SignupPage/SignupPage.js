@@ -7,7 +7,6 @@ import Input from '../../public/Input/Input';
 import Button from '../../public/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { eventCall } from '../../controllers/EventHandler';
 
 class SignupPage extends Component {
     constructor(props) {
@@ -59,13 +58,14 @@ class SignupPage extends Component {
     }
 
     createUser() {
-        eventCall({
-            type: 'DETAILS', 
-            name: 'create_user', 
-            email: this.state.email, 
-            password: this.state.password, 
-            fullname: this.state.fullname
-        })
+        // CREATE USER
+        // eventCall({
+        //     type: 'DETAILS', 
+        //     name: 'create_user', 
+        //     email: this.state.email, 
+        //     password: this.state.password, 
+        //     fullname: this.state.fullname
+        // })
     }
 
     render() {

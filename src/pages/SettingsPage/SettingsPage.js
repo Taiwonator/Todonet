@@ -15,10 +15,11 @@ class SettingsPage extends Component {
    }
 
    logoutUser() {
-    eventCall({
-      type: 'DETAILS', 
-      name: 'logout_user' 
-    })
+     // LOGOUT
+    // eventCall({
+    //   type: 'DETAILS', 
+    //   name: 'logout_user' 
+    // })
    }
 
    render() {

@@ -8,9 +8,9 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import { DetailsContext } from './controllers/details-context';
 import Wrapper from './pages/Wrapper/Wrapper';
 import { AppProvider } from './context';
+import { AuthProvider } from './authContext';
 
 class App extends Component {
   
@@ -26,8 +26,10 @@ class App extends Component {
   render() {
 
     return (
-      <AppProvider>
+      <AuthProvider>
+
         <Router>
+          
             <Switch>
 
               <Route exact path="/" 
@@ -37,10 +39,8 @@ class App extends Component {
 
               <Route path="/app" 
                     render={(props) => (
-                      <Wrapper {...props} />
+                      <AppProvider><Wrapper {...props} /></AppProvider>
                     )} />  
-
-              <DetailsContext.Provider value={ this.state.details }>
 
                 <Route path="/login" 
                       render={(props) => (
@@ -51,14 +51,12 @@ class App extends Component {
                       render={(props) => (
                         <SignupPage {...props} />
                       )} /> 
-              
-              </DetailsContext.Provider>
-
 
             </Switch>
 
         </Router>
-      </AppProvider>
+
+      </AuthProvider>
     );
   }
 }

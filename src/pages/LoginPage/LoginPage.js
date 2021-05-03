@@ -7,8 +7,6 @@ import Input from '../../public/Input/Input';
 import Button from '../../public/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { DetailsContext } from '../../controllers/details-context';
-import { eventCall } from '../../controllers/EventHandler';
 
 class LoginPage extends Component {
     constructor(props) {
@@ -23,20 +21,6 @@ class LoginPage extends Component {
             }
         }
     }
-
-    componentDidMount() {
-        eventCall({
-            type: 'DETAILS', 
-            name: 'get_data'
-        })
-      }
-   
-      getUser() {
-       var user = eventCall({
-           type: 'DETAILS', 
-           name: 'get_current_user'
-       })
-      }
 
     handleEmailChange = (e) => {
         const email = e.target.value;
@@ -57,12 +41,13 @@ class LoginPage extends Component {
     }
 
     loginUser() {
-        eventCall({
-            type: 'DETAILS', 
-            name: 'login_user', 
-            email: this.state.email, 
-            password: this.state.password, 
-        })
+        // LOGIN USER 
+        // eventCall({
+        //     type: 'DETAILS', 
+        //     name: 'login_user', 
+        //     email: this.state.email, 
+        //     password: this.state.password, 
+        // })
     }
 
     render() {
@@ -111,7 +96,5 @@ class LoginPage extends Component {
         )
     }
 }
-
-LoginPage.contextType = DetailsContext;
 
 export default withRouter(LoginPage)

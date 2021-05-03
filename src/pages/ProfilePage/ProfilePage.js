@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { eventCall } from '../../controllers/EventHandler';
 import './ProfilePage.scss';
 
 class ProfilePage extends Component {
@@ -8,16 +7,6 @@ class ProfilePage extends Component {
     this.state = { user: '' }
    }
 
-   componentDidMount() {
-     this.getUser();
-   }
-
-   getUser() {
-    var user = eventCall({
-        type: 'DETAILS', 
-        name: 'get_current_user'
-    })
-   }
 
    render() {
        return ( 

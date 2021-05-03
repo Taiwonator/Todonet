@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import { DetailsContext } from './controllers/details-context';
 import Wrapper from './pages/Wrapper/Wrapper';
+import { AppProvider } from './context';
 
 class App extends Component {
   
@@ -25,37 +26,39 @@ class App extends Component {
   render() {
 
     return (
-      <Router>
-          <Switch>
+      <AppProvider>
+        <Router>
+            <Switch>
 
-            <Route exact path="/" 
-                   render={(props) => (
-                    <LandingPage {...props} />
-                   )} />
-
-            <Route path="/app" 
-                   render={(props) => (
-                    <Wrapper {...props} />
-                   )} />  
-
-            <DetailsContext.Provider value={ this.state.details }>
-
-              <Route path="/login" 
+              <Route exact path="/" 
                     render={(props) => (
-                      <LoginPage {...props} />
+                      <LandingPage {...props} />
                     )} />
 
-              <Route path="/signup" 
+              <Route path="/app" 
                     render={(props) => (
-                      <SignupPage {...props} />
-                    )} /> 
-            
-            </DetailsContext.Provider>
+                      <Wrapper {...props} />
+                    )} />  
+
+              <DetailsContext.Provider value={ this.state.details }>
+
+                <Route path="/login" 
+                      render={(props) => (
+                        <LoginPage {...props} />
+                      )} />
+
+                <Route path="/signup" 
+                      render={(props) => (
+                        <SignupPage {...props} />
+                      )} /> 
+              
+              </DetailsContext.Provider>
 
 
-          </Switch>
+            </Switch>
 
-      </Router>
+        </Router>
+      </AppProvider>
     );
   }
 }

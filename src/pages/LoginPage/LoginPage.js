@@ -8,6 +8,7 @@ import Button from '../../public/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { DetailsContext } from '../../controllers/details-context';
+import { eventCall } from '../../controllers/EventHandler';
 
 class LoginPage extends Component {
     constructor(props) {
@@ -22,6 +23,20 @@ class LoginPage extends Component {
             }
         }
     }
+
+    componentDidMount() {
+        eventCall({
+            type: 'DETAILS', 
+            name: 'get_data'
+        })
+      }
+   
+      getUser() {
+       var user = eventCall({
+           type: 'DETAILS', 
+           name: 'get_current_user'
+       })
+      }
 
     handleEmailChange = (e) => {
         const email = e.target.value;
@@ -41,6 +56,15 @@ class LoginPage extends Component {
         this.props.history.goBack();
     }
 
+    loginUser() {
+        eventCall({
+            type: 'DETAILS', 
+            name: 'login_user', 
+            email: this.state.email, 
+            password: this.state.password, 
+        })
+    }
+
     render() {
         const details = this.context;
         const inputsFilled = (this.state.email.length !== 0 && this.state.password.length !== 0)
@@ -49,7 +73,7 @@ class LoginPage extends Component {
             <div className="login-page-container">
                 <button onClick={ () => this.goBack() }><FontAwesomeIcon icon={faArrowLeft} color='#FABA34' size="2x"/></button>
                 <Illustration id={1} width={300} height={250}/>
-                <header>
+                <header onClick={ () => this.getUser() }>
                     <Title header="Welcome Back."  
                         headerColor="black"
                         headerFontSize="35px"
@@ -79,7 +103,7 @@ class LoginPage extends Component {
                             textColor="white" 
                             textAlign="center"
                             borderColor="white"
-                            onClick={ () => console.log('login') }
+                            onClick={ () => this.loginUser() }
                             disabled={ !inputsFilled }
                             />
                 </form>

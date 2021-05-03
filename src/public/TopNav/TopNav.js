@@ -36,7 +36,7 @@ class TopNav extends Component {
 
        let element;
        if(this.props.isSelected('cog')) {
-        element = <button onClick={ () => this.goBack() }><FontAwesomeIcon icon={faTimesCircle} color='red' size="3x"/></button>
+        element = <button onClick={ () => this.goBack() }><FontAwesomeIcon icon={faTimesCircle} color='#FABA34' size="3x"/></button>
        } else {
         element = <button onClick={ () => this.openPage("/app/settings", "cog") }><FontAwesomeIcon icon={faCog} color='#27272E' size="3x"/></button>
        }

@@ -22,10 +22,10 @@ class LandingPage extends Component {
             <header onClick={ () => this.openPage('/app') }>
                 <Title header="Todonet."  
                       headerColor="white"
-                      headerFontSize="50px"
+                      headerFontSize="70px"
                       subheader="The social media of the future" 
                       subheaderColor="black"
-                      subheaderFontSize="18px"
+                      subheaderFontSize="20px"
                       textAlign="center" 
                       />
             </header>
@@ -39,14 +39,14 @@ class LandingPage extends Component {
                           textColor="white" 
                           textAlign="center"
                           borderColor="white"
-                          onClick={ () => this.openPage('/login') }
+                          onClick={ () => this.openPage('/signup') }
                           />
                   <Button text="I already have an account" 
                           bgColor="black" 
                           textColor="white" 
                           textAlign="center"
                           borderColor="white"
-                          onClick={ () => this.openPage('/signup') }
+                          onClick={ () => this.openPage('/login') }
                           />
                 </div>
             </div>

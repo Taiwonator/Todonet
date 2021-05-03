@@ -27,8 +27,8 @@ export function eventCall(event) {
 function androidEventHandler(event) {
 
     switch(event.name) {
-        case 'hello':
-            helloWorld();
+        case 'message':
+            androidMessage(event);
             break;
         default:
             break;
@@ -53,6 +53,10 @@ function activitiesEventHandler(event) {
 function helloWorld() {
     alert("Hello (from web)");
     showAndroidToast('Hello Android!');
+}
+
+function androidMessage(event) {
+    showAndroidToast(event.message);
 }
 
 function showAndroidToast(toast) {

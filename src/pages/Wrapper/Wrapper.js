@@ -14,6 +14,8 @@ import ActivitiesPage from '../ActivitiesPage/ActivitiesPage';
 import ProfilePage from '../ProfilePage/ProfilePage';
 import TopNav from '../../public/TopNav/TopNav';
 import SettingsPage from '../SettingsPage/SettingsPage';
+import { AuthConsumer } from '../../authContext';
+import PleaseLoginPage from '../PleaseLoginPage/PleaseLoginPage';
 
 
 class Wrapper extends Component {
@@ -48,50 +50,60 @@ class Wrapper extends Component {
    selectIcon = (icon) => this.setState(({ selected: icon }))
 
    render() {
-      
-       return ( 
-           <Router>
-           <TopNav isSelected={this.isSelected} selectIcon={this.selectIcon} routeToIcon={this.routeToIcon}/>
-           <div className="wrapper-container">
-               
-                   <Switch>
-
-                        <Route exact path="/app" 
-                        render={(props) => (
-                            <TodoPage {...props} />
-                        )} /> 
-
-                        <Route path="/app/friends" 
-                        render={(props) => (
-                            <FriendsPage {...props} />
-                        )} /> 
-
-                        <Route path="/app/activities" 
-                        render={(props) => (
-                            <ActivitiesPage {...props} />
-                        )} /> 
-
-                        <Route path="/app/profile" 
-                        render={(props) => (
-                            <ProfilePage {...props} />
-                        )} /> 
-
-                        <Route path="/app/home" 
-                        render={(props) => (
-                            <HomePage {...props} />
-                        )} /> 
-
-                        <Route path="/app/settings" 
-                        render={(props) => (
-                        <SettingsPage {...props} />
-                        )} />
-
-                   </Switch>
-               
-           </div>
-           <BottomNav isSelected={this.isSelected} selectIcon={this.selectIcon} routeToIcon={this.routeToIcon}/>
-           </Router>
-       )
+       if(this.props.auth.state.loggedIn) {
+        return ( 
+            <Router>
+            <TopNav isSelected={this.isSelected} selectIcon={this.selectIcon} routeToIcon={this.routeToIcon}/>
+            <div className="wrapper-container">
+                
+                    <Switch>
+ 
+                         <Route exact path="/app" 
+                         render={(props) => (
+                             <TodoPage {...props} />
+                         )} /> 
+ 
+                         <Route path="/app/friends" 
+                         render={(props) => (
+                             <FriendsPage {...props} />
+                         )} /> 
+ 
+                         <Route path="/app/activities" 
+                         render={(props) => (
+                             <ActivitiesPage {...props} />
+                         )} /> 
+ 
+                         <Route path="/app/profile" 
+                         render={(props) => (
+                             <ProfilePage {...props} />
+                         )} /> 
+ 
+                         <Route path="/app/home" 
+                         render={(props) => (
+                             <HomePage {...props} />
+                         )} /> 
+ 
+                         <Route path="/app/settings" 
+                         render={(props) => (
+                         <AuthConsumer>
+                             { auth => (
+                                 <SettingsPage {...props} auth={auth}/>
+                             ) }
+                         </AuthConsumer>
+                         )} />
+ 
+                    </Switch>
+                
+            </div>
+            <BottomNav isSelected={this.isSelected} selectIcon={this.selectIcon} routeToIcon={this.routeToIcon}/>
+            </Router>
+        )
+       } else {
+           return (
+               <PleaseLoginPage />
+           )
+       }
+       
    }
 }
 

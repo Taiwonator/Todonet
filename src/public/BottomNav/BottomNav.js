@@ -15,7 +15,6 @@ class BottomNav extends Component {
    
    componentWillMount() {
     this.unlisten = this.props.history.listen((location, action) => {
-        console.log(window.location.pathname);
         this.props.selectIcon(this.props.routeToIcon(window.location.pathname))
     });
   }

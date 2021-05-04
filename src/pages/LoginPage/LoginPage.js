@@ -21,6 +21,11 @@ class LoginPage extends Component {
             }
         }
     }
+    
+
+    openPage(page) {
+        this.props.history.push(page)
+    }
 
     handleEmailChange = (e) => {
         const email = e.target.value;
@@ -40,59 +45,61 @@ class LoginPage extends Component {
         this.props.history.goBack();
     }
 
+
+
     loginUser() {
-        // LOGIN USER 
-        // eventCall({
-        //     type: 'DETAILS', 
-        //     name: 'login_user', 
-        //     email: this.state.email, 
-        //     password: this.state.password, 
-        // })
+        this.props.auth.eventHandler({
+            type: 'DETAILS', 
+            name: 'login_user', 
+            email: this.state.email, 
+            password: this.state.password, 
+            callback: () => setTimeout(() => this.openPage('/app/todo'), 1000 )
+        })
     }
 
     render() {
-        const details = this.context;
+        
         const inputsFilled = (this.state.email.length !== 0 && this.state.password.length !== 0)
 
         return (
-            <div className="login-page-container">
-                <button onClick={ () => this.goBack() }><FontAwesomeIcon icon={faArrowLeft} color='#FABA34' size="2x"/></button>
-                <Illustration id={1} width={300} height={250}/>
-                <header onClick={ () => this.getUser() }>
-                    <Title header="Welcome Back."  
-                        headerColor="black"
-                        headerFontSize="35px"
-                        subheader="The fastest growing site out there" 
-                        subheaderColor="#CCCCCC"
-                        subheaderFontSize="18px"
-                        textAlign="center"
-                        />
-                </header>
-                <form>
-                    <Input type="text"
-                        placeholder="Email"
-                        value={this.state.email}
-                        onChange={this.handleEmailChange}
-                        colors={ this.state.colors }
-                        empty={ (this.state.email.length === 0) ? true  : false}
-                            />
-                    <Input type="Password"
-                        placeholder="Password"
-                        value={this.state.password}
-                        onChange={this.handlePasswordChange}
-                        colors={ this.state.colors }
-                        empty={ (this.state.password.length === 0) ? true  : false}
-                            />
-                    <Button text="LOG IN" 
-                            bgColor="#FABA34" 
-                            textColor="white" 
+                    <div className="login-page-container">
+                    <button onClick={ () => this.goBack() }><FontAwesomeIcon icon={faArrowLeft} color='#FABA34' size="2x"/></button>
+                    <Illustration id={1} width={300} height={250}/>
+                    <header onClick={ () => this.getUser() }>
+                        <Title header="Welcome Back."  
+                            headerColor="black"
+                            headerFontSize="35px"
+                            subheader="The fastest growing site out there" 
+                            subheaderColor="#CCCCCC"
+                            subheaderFontSize="18px"
                             textAlign="center"
-                            borderColor="white"
-                            onClick={ () => this.loginUser() }
-                            disabled={ !inputsFilled }
                             />
-                </form>
-            </div>
+                    </header>
+                    <form>
+                        <Input type="text"
+                            placeholder="Email"
+                            value={this.state.email}
+                            onChange={this.handleEmailChange}
+                            colors={ this.state.colors }
+                            empty={ (this.state.email.length === 0) ? true  : false}
+                                />
+                        <Input type="Password"
+                            placeholder="Password"
+                            value={this.state.password}
+                            onChange={this.handlePasswordChange}
+                            colors={ this.state.colors }
+                            empty={ (this.state.password.length === 0) ? true  : false}
+                                />
+                        <Button text="LOG IN" 
+                                bgColor="#FABA34" 
+                                textColor="white" 
+                                textAlign="center"
+                                borderColor="white"
+                                onClick={ () => this.loginUser()}
+                                disabled={ !inputsFilled }
+                                />
+                    </form>
+                </div>
         )
     }
 }

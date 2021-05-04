@@ -24,6 +24,10 @@ class SignupPage extends Component {
         }
     }
 
+    openPage(page) {
+        this.props.history.push(page)
+    }
+
     handleNameChange = (e) => {
         const fullname = e.target.value;
         this.setState(prevState => ({
@@ -58,14 +62,14 @@ class SignupPage extends Component {
     }
 
     createUser() {
-        // CREATE USER
-        // eventCall({
-        //     type: 'DETAILS', 
-        //     name: 'create_user', 
-        //     email: this.state.email, 
-        //     password: this.state.password, 
-        //     fullname: this.state.fullname
-        // })
+        this.props.auth.eventHandler({
+            type: 'DETAILS', 
+            name: 'create_user', 
+            email: this.state.email, 
+            password: this.state.password, 
+            fullname: this.state.fullname, 
+            callback: () => setTimeout(() => this.openPage('/app/todo'), 1000 )
+        })
     }
 
     render() {

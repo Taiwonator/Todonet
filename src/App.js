@@ -10,7 +10,7 @@ import {
 } from "react-router-dom";
 import Wrapper from './pages/Wrapper/Wrapper';
 import { AppProvider } from './context';
-import { AuthProvider } from './authContext';
+import { AuthConsumer, AuthProvider } from './authContext';
 
 class App extends Component {
   
@@ -39,17 +39,29 @@ class App extends Component {
 
               <Route path="/app" 
                     render={(props) => (
-                      <AppProvider><Wrapper {...props} /></AppProvider>
+                      <AuthConsumer>
+                        { auth => (
+                          <AppProvider><Wrapper {...props} auth={auth} /></AppProvider>
+                        ) }
+                      </AuthConsumer>
                     )} />  
 
                 <Route path="/login" 
                       render={(props) => (
-                        <LoginPage {...props} />
+                        <AuthConsumer>
+                          { auth => (
+                            <LoginPage {...props} auth={auth} />
+                          ) }
+                        </AuthConsumer>
                       )} />
 
                 <Route path="/signup" 
                       render={(props) => (
-                        <SignupPage {...props} />
+                        <AuthConsumer>
+                          { auth => (
+                            <SignupPage {...props} auth={auth} />
+                          ) }
+                        </AuthConsumer>
                       )} /> 
 
             </Switch>

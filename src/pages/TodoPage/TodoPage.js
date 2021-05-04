@@ -75,17 +75,12 @@ class TodoPage extends Component {
    }
 
    render() {
-     let user = this.props.app.state.user;
-     let email;
-     if(user) {
-       email = user.email;
-     }
        return ( 
          <div className="todo-page-container">  
             <Title header="TODAY."  
                    headerColor="#262626"
                    headerFontSize="60px"
-                   subheader={`Don't forget to have fun ${email} :) `}
+                   subheader={`Don't forget to have fun ${this.props.app.state.name} :) `}
                    subheaderColor="#993AEB"
                    subheaderFontSize="24px"
                    textAlign="left"

@@ -40,11 +40,11 @@ export class AppProvider extends Component {
                 state: data
             } 
         }), () => {
-            // this.eventHandler({
-            //     type: 'DETAILS', 
-            //     name: 'get_user_data', 
-            //     callback: () => console.log("user data success retreived")
-            // })
+            this.eventHandler({
+                type: 'DETAILS', 
+                name: 'get_user_data', 
+                callback: () => console.log("user data success retreived")
+            })
             callback();
         })
     }
@@ -59,7 +59,7 @@ export class AppProvider extends Component {
     }
 
     getUserData = (callback) => {
-        app.firestore().collection('users').doc(this.state.user.uid).get().then(doc => {
+        app.firestore().collection('users').doc(this.state.value.state.user.uid).get().then(doc => {
             let name = doc.data().full_name;
             this.setState((prevState) => ({
                 value: {

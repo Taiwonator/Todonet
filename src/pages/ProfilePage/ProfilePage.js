@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Title from '../../public/Title/Title';
 import './ProfilePage.scss';
 
 class ProfilePage extends Component {
@@ -10,7 +11,16 @@ class ProfilePage extends Component {
 
    render() {
        return ( 
-         <div> Profile </div>       
+         <div className="profile-page-container"> 
+            <Title header={this.props.app.state.name}  
+                   headerColor="#262626"
+                   headerFontSize="60px"
+                   subheader="#random-tag" 
+                   subheaderColor="#993AEB"
+                   subheaderFontSize="24px"
+                   textAlign="left"
+                    />
+         </div>       
        )
    }
 }

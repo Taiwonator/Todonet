@@ -32,6 +32,7 @@
     
                 p {
                     font-size: 18px;
+                    font-weight: 600;
                 }
             }
             
@@ -62,7 +63,7 @@
                 border: none !important;
                 color: #BEBEBE; 
                 font-size: 18px;
-                width: 100%;
+                flex: 1;
             }
         }
     }

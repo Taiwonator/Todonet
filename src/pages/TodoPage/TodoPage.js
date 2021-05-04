@@ -13,6 +13,16 @@ class TodoPage extends Component {
     }
    }
 
+   componentDidMount() {
+     console.log(this.props.auth, this.props.app);
+     this.props.app.eventHandler({
+       type: 'DETAILS', 
+       name: 'set_user_data', 
+       data: { name: this.props.auth.state.name },
+       callback: () => console.log("set user data success")
+     })
+   }
+
    handleInputChange = (e) => {
     const value = e.target.value;
     console.log(e.key);

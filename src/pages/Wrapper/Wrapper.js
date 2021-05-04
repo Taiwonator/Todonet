@@ -16,6 +16,7 @@ import TopNav from '../../public/TopNav/TopNav';
 import SettingsPage from '../SettingsPage/SettingsPage';
 import { AuthConsumer } from '../../authContext';
 import PleaseLoginPage from '../PleaseLoginPage/PleaseLoginPage';
+import { AppConsumer } from '../../context';
 
 
 class Wrapper extends Component {
@@ -57,10 +58,18 @@ class Wrapper extends Component {
             <div className="wrapper-container">
                 
                     <Switch>
- 
+                        
                          <Route exact path="/app" 
                          render={(props) => (
-                             <TodoPage {...props} />
+                             <AuthConsumer>
+                                 {auth => (
+                                     <AppConsumer>
+                                         {app => (
+                                            <TodoPage {...props} auth={auth} app={app} />
+                                         )}
+                                    </AppConsumer>
+                                 )}
+                             </AuthConsumer>
                          )} /> 
  
                          <Route path="/app/friends" 
@@ -75,7 +84,11 @@ class Wrapper extends Component {
  
                          <Route path="/app/profile" 
                          render={(props) => (
-                             <ProfilePage {...props} />
+                             <AppConsumer>
+                                 {app => (
+                                    <ProfilePage {...props} app={app}/>
+                                 )}
+                             </AppConsumer>
                          )} /> 
  
                          <Route path="/app/home" 

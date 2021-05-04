@@ -1,4 +1,4 @@
-function androidEventHandler(event) {
+export function androidEventHandler(event) {
 
     switch(event.name) {
         case 'message':
@@ -16,6 +16,7 @@ function helloWorld() {
 }
 
 function androidMessage(event) {
+    // alert(event.message);
     showAndroidToast(event.message);
 }
 

@@ -3,6 +3,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import { app } from './fire';
+import { androidEventHandler } from './controllers/AndroidHandler';
 
 const AuthContext = React.createContext('auth')
 
@@ -12,11 +13,21 @@ export class AuthProvider extends Component {
         this.state = { 
             value: {
                 state: {
-                    loggedIn: false
+                    loggedIn: false,
+                    email: ''
                 }, 
                 eventHandler: this.eventHandler
              }
          }
+    }
+
+    callAlert(message) {
+        alert(message);
+        androidEventHandler({
+            type: 'ANDROID', 
+            name: 'message', 
+            message 
+        })
     }
 
     // eventHandler
@@ -45,17 +56,21 @@ export class AuthProvider extends Component {
             .then((userCredential) => {
                 // Signed in 
                 var user = userCredential.user;
-                alert('user created successfully');
-                console.log(user);
+                return app.firestore().collection('users').doc(userCredential.user.uid).set({
+                    full_name: fullname
+                })
+                .then(() => {
+                    //ALERTS
+                    this.getUserDetails(user);
+                    this.callAlert('User successfully created');
+                    this.setState((prevState) => ({
+                        value: {
+                            ...prevState.value, 
+                            state: { ...prevState.value.state, loggedIn: true, email: user.email }
+                        }
+                    }), () => callback())
 
-                this.setState((prevState) => ({
-                    value: {
-                        ...prevState.value, 
-                        state: { loggedIn: true }
-                    }
-                }), () => callback())
-
-                // ...
+                    })
             })
             .catch((error) => {
                 var errorCode = error.code;
@@ -72,12 +87,12 @@ export class AuthProvider extends Component {
             .then((userCredential) => {
                 // Signed in
                 var user = userCredential.user;
-                alert('logged in successfully');
-
+                this.getUserDetails(user);
+                this.callAlert('Log in successfull');
                 this.setState((prevState) => ({
                     value: {
                         ...prevState.value, 
-                        state: { loggedIn: true }
+                        state: { ...prevState.value.state, loggedIn: true, email: user.email }
                     }
                 }), () => callback())
 
@@ -92,11 +107,12 @@ export class AuthProvider extends Component {
     // logout 
     logoutUser = (callback) => {
         app.auth().signOut().then(() => {
-            alert('signout complete');
+            this.callAlert('Sign out successfull');
+
             this.setState((prevState) => ({
                 value: {
                     ...prevState.value, 
-                    state: { loggedIn: false }
+                    state: { ...prevState.value.state, loggedIn: false, email: '', name: '' }
                 }
             }), () => callback())
             
@@ -114,6 +130,18 @@ export class AuthProvider extends Component {
             console.log('no user');
         }
         });
+    }
+
+    getUserDetails = (user) => {
+        app.firestore().collection('users').doc(user.uid).get().then(doc => {
+            let name = doc.data().full_name;
+            this.setState((prevState) => ({
+                value: {
+                    ...prevState.value, 
+                    state: { ...prevState.value.state, name }
+                }
+            }))
+        })
     }
 
 

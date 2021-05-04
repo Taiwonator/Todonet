@@ -1,4 +1,5 @@
 import React from 'react'
+import './Illustration.scss';
 
 function Illustration(props) {
 

@@ -68,7 +68,7 @@ class SignupPage extends Component {
             email: this.state.email, 
             password: this.state.password, 
             fullname: this.state.fullname, 
-            callback: () => setTimeout(() => this.openPage('/app/todo'), 1000 )
+            callback: () => setTimeout(() => this.openPage('/app'), 1000 )
         })
     }
 

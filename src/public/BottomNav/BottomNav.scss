@@ -15,6 +15,8 @@ $tablet-width: 768px;
     background-color: #27272E;
     display: flex;
     justify-content: space-around;
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
 
     @include tablet {
         height: 75px;

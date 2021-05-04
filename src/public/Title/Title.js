@@ -11,7 +11,8 @@ function Title(props) {
 
     const subheaderStyle = {
         color: props.subheaderColor,
-        fontSize: props.subheaderFontSize
+        fontSize: props.subheaderFontSize,
+        textAlign: props.textAlign
     }
 
     return (

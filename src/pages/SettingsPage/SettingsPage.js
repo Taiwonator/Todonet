@@ -30,7 +30,7 @@ class SettingsPage extends Component {
                     textAlign="left" 
             />   
             <div className="settings-buttons-container">
-                <SettingsButton text="User details" onClick={() => eventCall({ type: 'ANDROID', name: 'message', message: this.props.auth.state.email })} color={'black'}/>
+                <SettingsButton text="User details" onClick={() => eventCall({ type: 'ANDROID', name: 'message', message: this.props.auth.state.user.email })} color={'black'}/>
                 <SettingsButton text="Settings 2" onClick={() => alert('2')} color={'black'}/>
                 <SettingsButton text="Settings 3" onClick={() => alert('3')} color={'black'}/>
                 <SettingsButton text="Settings 4" onClick={() => alert('4')} color={'black'}/>

@@ -12,9 +12,9 @@ class ProfilePage extends Component {
    render() {
        return ( 
          <div className="profile-page-container"> 
-            <Title header={this.props.app.state.name}  
+            <Title header={this.props.app.state.user.email}  
                    headerColor="#262626"
-                   headerFontSize="60px"
+                   headerFontSize="40px"
                    subheader="#random-tag" 
                    subheaderColor="#993AEB"
                    subheaderFontSize="24px"

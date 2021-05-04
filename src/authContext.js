@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
@@ -14,7 +14,7 @@ export class AuthProvider extends Component {
             value: {
                 state: {
                     loggedIn: false,
-                    email: ''
+                    user: ''
                 }, 
                 eventHandler: this.eventHandler
              }
@@ -56,17 +56,17 @@ export class AuthProvider extends Component {
             .then((userCredential) => {
                 // Signed in 
                 var user = userCredential.user;
-                return app.firestore().collection('users').doc(userCredential.user.uid).set({
+                return app.firestore().collection('users').doc(user.uid).set({
                     full_name: fullname
                 })
                 .then(() => {
                     //ALERTS
-                    this.getUserDetails(user);
+                    // this.getUserDetails(user);
                     this.callAlert('User successfully created');
                     this.setState((prevState) => ({
                         value: {
                             ...prevState.value, 
-                            state: { ...prevState.value.state, loggedIn: true, email: user.email }
+                            state: { ...prevState.value.state, loggedIn: true, user }
                         }
                     }), () => callback())
 
@@ -87,12 +87,13 @@ export class AuthProvider extends Component {
             .then((userCredential) => {
                 // Signed in
                 var user = userCredential.user;
-                this.getUserDetails(user);
+
+                // this.getUserDetails(user);
                 this.callAlert('Log in successfull');
                 this.setState((prevState) => ({
                     value: {
                         ...prevState.value, 
-                        state: { ...prevState.value.state, loggedIn: true, email: user.email }
+                        state: { ...prevState.value.state, loggedIn: true, user }
                     }
                 }), () => callback())
 
@@ -112,7 +113,7 @@ export class AuthProvider extends Component {
             this.setState((prevState) => ({
                 value: {
                     ...prevState.value, 
-                    state: { ...prevState.value.state, loggedIn: false, email: '', name: '' }
+                    state: { ...prevState.value.state, loggedIn: false, user: '' }
                 }
             }), () => callback())
             
@@ -132,17 +133,17 @@ export class AuthProvider extends Component {
         });
     }
 
-    getUserDetails = (user) => {
-        app.firestore().collection('users').doc(user.uid).get().then(doc => {
-            let name = doc.data().full_name;
-            this.setState((prevState) => ({
-                value: {
-                    ...prevState.value, 
-                    state: { ...prevState.value.state, name }
-                }
-            }))
-        })
-    }
+    // getUserDetails = (user) => {
+    //     app.firestore().collection('users').doc(user.uid).get().then(doc => {
+    //         let name = doc.data().full_name;
+    //         this.setState((prevState) => ({
+    //             value: {
+    //                 ...prevState.value, 
+    //                 state: { ...prevState.value.state, name }
+    //             }
+    //         }))
+    //     })
+    // }
 
 
     render() {

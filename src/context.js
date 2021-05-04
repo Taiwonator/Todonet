@@ -3,6 +3,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import { app } from './fire';
+import { androidEventHandler } from './controllers/AndroidHandler';
 
 const AppContext = React.createContext('app')
 
@@ -25,6 +26,8 @@ export class AppProvider extends Component {
             case 'set_user_data': 
                 this.setUserData(event.data, event.callback);
                 break;
+            case 'get_user_data': 
+                this.getUserData(event.callback);
             default:
                 break;
         }
@@ -36,7 +39,14 @@ export class AppProvider extends Component {
                 ...prevState.value, 
                 state: data
             } 
-        }), () => callback())
+        }), () => {
+            // this.eventHandler({
+            //     type: 'DETAILS', 
+            //     name: 'get_user_data', 
+            //     callback: () => console.log("user data success retreived")
+            // })
+            callback();
+        })
     }
 
     getData = () => {
@@ -45,6 +55,18 @@ export class AppProvider extends Component {
                 const todo = doc.data();
                 console.log(todo);
             })
+        })
+    }
+
+    getUserData = (callback) => {
+        app.firestore().collection('users').doc(this.state.user.uid).get().then(doc => {
+            let name = doc.data().full_name;
+            this.setState((prevState) => ({
+                value: {
+                    ...prevState.value, 
+                    state: { ...prevState.value.state, name }
+                }
+            }), () => callback())
         })
     }
 

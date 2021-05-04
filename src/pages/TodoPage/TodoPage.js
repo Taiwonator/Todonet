@@ -14,13 +14,14 @@ class TodoPage extends Component {
    }
 
    componentDidMount() {
-     console.log(this.props.auth, this.props.app);
-     this.props.app.eventHandler({
-       type: 'DETAILS', 
-       name: 'set_user_data', 
-       data: { name: this.props.auth.state.name },
-       callback: () => console.log("set user data success")
-     })
+      this.props.app.eventHandler({
+        type: 'DETAILS', 
+        name: 'set_user_data', 
+        data: { user: this.props.auth.state.user },
+        callback: () => console.log("set user data success")
+      })
+      setTimeout(() => console.log(this.props.auth, this.props.app), 1000);
+      
    }
 
    handleInputChange = (e) => {
@@ -74,12 +75,17 @@ class TodoPage extends Component {
    }
 
    render() {
+     let user = this.props.app.state.user;
+     let email;
+     if(user) {
+       email = user.email;
+     }
        return ( 
          <div className="todo-page-container">  
             <Title header="TODAY."  
                    headerColor="#262626"
                    headerFontSize="60px"
-                   subheader="Don't forget to have fun :)" 
+                   subheader={`Don't forget to have fun ${email} :) `}
                    subheaderColor="#993AEB"
                    subheaderFontSize="24px"
                    textAlign="left"

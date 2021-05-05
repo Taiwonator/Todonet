@@ -34,7 +34,7 @@ class SettingsPage extends Component {
                 <SettingsButton text="Settings 2" onClick={() => alert('2')} color={'black'}/>
                 <SettingsButton text="Settings 3" onClick={() => alert('3')} color={'black'}/>
                 <SettingsButton text="Settings 4" onClick={() => alert('4')} color={'black'}/>
-                <SettingsButton text="Logout" onClick={() => this.logoutUser()} color={'#9639B3'} noIcon={true}/>
+                <SettingsButton text="Logout" onClick={() => this.logoutUser()} color={'#9639B3'} noIcon={true} bold={true}/>
             </div>
           </div> 
 

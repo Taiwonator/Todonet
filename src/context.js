@@ -28,6 +28,8 @@ export class AppProvider extends Component {
                 break;
             case 'get_user_data': 
                 this.getUserData(event.callback);
+            case 'get_user_todos': 
+                this.getUserTodos(event.callback);
             default:
                 break;
         }
@@ -67,8 +69,40 @@ export class AppProvider extends Component {
                     state: { ...prevState.value.state, name }
                 }
             }), () => callback())
+        }).then(() => {
+            this.eventHandler({
+                type: 'DETAILS', 
+                name: 'get_user_todos', 
+                callback: () => console.log("Todos retreived")
+            })
         })
     }
+
+    getUserTodos = (callback) => {
+        app.firestore().collection('users').doc(this.state.value.state.user.uid).get().then(doc => {
+            const userDetails = doc.data();
+            let todo_list = [];
+            userDetails.todo_ids.forEach( todo => {
+                app.firestore().collection('todos').doc(todo).get().then(doc => {
+                    todo_list.push(doc.data());
+                })
+            })
+            this.setState((prevState) => ({
+                value: {
+                    ...prevState.value, 
+                    state: { ...prevState.value.state, todo_list }
+                }
+            }), () => callback())
+        })
+    }
+
+    // Add todo
+    addTodoItem = (text, callback) => {
+        // app.firestore().collection('todos').doc()
+    }
+
+    // Delete todo
+    // Mark todo
 
     render() {
         return ( 

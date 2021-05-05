@@ -16,7 +16,6 @@ import TopNav from '../../public/TopNav/TopNav';
 import SettingsPage from '../SettingsPage/SettingsPage';
 import { AuthConsumer } from '../../authContext';
 import PleaseLoginPage from '../PleaseLoginPage/PleaseLoginPage';
-import { AppConsumer } from '../../context';
 
 
 class Wrapper extends Component {
@@ -63,11 +62,7 @@ class Wrapper extends Component {
                          render={(props) => (
                              <AuthConsumer>
                                  {auth => (
-                                     <AppConsumer>
-                                         {app => (
-                                            <TodoPage {...props} auth={auth} app={app} />
-                                         )}
-                                    </AppConsumer>
+                                        <TodoPage {...props} auth={auth} todo_list={auth.state.todo_list}/>
                                  )}
                              </AuthConsumer>
                          )} /> 
@@ -84,11 +79,11 @@ class Wrapper extends Component {
  
                          <Route path="/app/profile" 
                          render={(props) => (
-                             <AppConsumer>
-                                 {app => (
-                                    <ProfilePage {...props} app={app}/>
+                             <AuthConsumer>
+                                 {auth => (
+                                    <ProfilePage {...props} auth={auth}/>
                                  )}
-                             </AppConsumer>
+                             </AuthConsumer>
                          )} /> 
  
                          <Route path="/app/home" 

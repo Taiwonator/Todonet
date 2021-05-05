@@ -57,20 +57,25 @@ export class AuthProvider extends Component {
                 // Signed in 
                 var user = userCredential.user;
                 return app.firestore().collection('users').doc(user.uid).set({
-                    full_name: fullname
+                    user_id: user.uid,
+                    full_name: fullname, 
+                    todo_ids: [], 
+                    friend_ids: []
+                }).then(() => {
+                    
+                    // return app.firestore().collection('todos').doc(user.uid).set({
+                    //     id: `todo_${new Date()}`, text: `click me ${fullname}`, date: new Date(), checked: false
+                    // }).then(() => {
+                        
+                        this.callAlert('User successfully created');
+                        this.setState((prevState) => ({
+                            value: {
+                                ...prevState.value, 
+                                state: { ...prevState.value.state, loggedIn: true, user }
+                            }
+                        }), () => callback())
+                    // })    
                 })
-                .then(() => {
-                    //ALERTS
-                    // this.getUserDetails(user);
-                    this.callAlert('User successfully created');
-                    this.setState((prevState) => ({
-                        value: {
-                            ...prevState.value, 
-                            state: { ...prevState.value.state, loggedIn: true, user }
-                        }
-                    }), () => callback())
-
-                    })
             })
             .catch((error) => {
                 var errorCode = error.code;
@@ -87,16 +92,7 @@ export class AuthProvider extends Component {
             .then((userCredential) => {
                 // Signed in
                 var user = userCredential.user;
-
-                // this.getUserDetails(user);
-                this.callAlert('Log in successfull');
-                this.setState((prevState) => ({
-                    value: {
-                        ...prevState.value, 
-                        state: { ...prevState.value.state, loggedIn: true, user }
-                    }
-                }), () => callback())
-
+                this.getUserData(user, callback);
             })
             .catch((error) => {
                 var errorCode = error.code;
@@ -133,18 +129,23 @@ export class AuthProvider extends Component {
         });
     }
 
-    // getUserDetails = (user) => {
-    //     app.firestore().collection('users').doc(user.uid).get().then(doc => {
-    //         let name = doc.data().full_name;
-    //         this.setState((prevState) => ({
-    //             value: {
-    //                 ...prevState.value, 
-    //                 state: { ...prevState.value.state, name }
-    //             }
-    //         }))
-    //     })
-    // }
-
+    getUserData = (user, callback) => {
+        app.firestore().collection('users').doc(user.uid).get().then(doc => {
+            const userDetails = doc.data();
+            let todo_list = [];
+            userDetails.todo_ids.forEach( todo => {
+                app.firestore().collection('todos').doc(todo).get().then(doc => {
+                    todo_list.push(doc.data());
+                })
+            })
+            this.setState((prevState) => ({
+                value: {
+                    ...prevState.value, 
+                    state: { ...prevState.value.state, todo_list, name: userDetails.full_name, loggedIn: true, user }
+                }
+            }), () => {this.callAlert('Log in successfull'); callback(); })
+        })
+    }
 
     render() {
         return ( 

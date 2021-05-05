@@ -8,20 +8,9 @@ class TodoPage extends Component {
    constructor(props) {
     super(props);
     this.state = {
-      todo_list: [ { id: new Date(), text: 'Hello good sir / madam', checked: false } ], 
+      todo_list: props.todo_list, 
       input_value: ''
     }
-   }
-
-   componentDidMount() {
-      this.props.app.eventHandler({
-        type: 'DETAILS', 
-        name: 'set_user_data', 
-        data: { user: this.props.auth.state.user },
-        callback: () => console.log("set user data success")
-      })
-      setTimeout(() => console.log(this.props.auth, this.props.app), 1000);
-      
    }
 
    handleInputChange = (e) => {
@@ -35,17 +24,15 @@ class TodoPage extends Component {
 
    addTodo = (text) => {
     let todo_list = [...this.state.todo_list];
-    todo_list.push({
-      id: new Date(), 
-      text, 
-      checked: false
-    })
+    todo_list.push(this.newTodo(text))
     this.setState((prevState) => ({
       ...prevState, 
       todo_list, 
       input_value: ''
     }))
    }
+
+   newTodo = (text) => ({ id: `todo_${new Date()}`, text, date: new Date(), checked: false }) 
 
    checkTodo = (id) => {
       let todo_list = [...this.state.todo_list];
@@ -80,7 +67,7 @@ class TodoPage extends Component {
             <Title header="TODAY."  
                    headerColor="#262626"
                    headerFontSize="60px"
-                   subheader={`Don't forget to have fun ${this.props.app.state.name} :) `}
+                   subheader={`Don't forget to have fun :) `}
                    subheaderColor="#993AEB"
                    subheaderFontSize="24px"
                    textAlign="left"

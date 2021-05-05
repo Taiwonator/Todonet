@@ -7,14 +7,14 @@ class SettingsButton extends Component {
    constructor(props) {
     super(props);
    }
-
-
+    
+   
 
    render() {
        return ( 
          <div className="settings-button-container" onClick={() => this.props.onClick()}>
              { (this.props.noIcon) ? '' : <FontAwesomeIcon icon={faCog} color='#27272E' size="2x"/> }
-             <h3 style={{ color: this.props.color }}>{this.props.text}</h3>
+             <h3 className={`${ (this.props.bold) ? 'bold' : '' }`} style={{ color: this.props.color }}>{this.props.text}</h3>
         </div>  
        )
    }

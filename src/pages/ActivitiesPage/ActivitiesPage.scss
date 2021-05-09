@@ -1,0 +1,43 @@
+.activities-page-container {
+
+    .activities-container {
+        margin-top: 5vh;
+
+        .activity {
+
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1em;
+
+            .left {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+
+                .profile-picture {
+                    height: 50px;
+                    width: 50px;
+                    margin-right: 1em;
+                }
+
+                p {
+                    font-weight: 300;
+                    font-size: 18px;
+
+                    .name {
+                        font-weight: 900;
+                    }
+
+                    .text {
+                        font-weight: 900;
+                    }
+                }
+            }
+
+        }
+
+    }
+
+}

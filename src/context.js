@@ -96,14 +96,6 @@ export class AppProvider extends Component {
         })
     }
 
-    // Add todo
-    addTodoItem = (text, callback) => {
-        // app.firestore().collection('todos').doc()
-    }
-
-    // Delete todo
-    // Mark todo
-
     render() {
         return ( 
             <AppContext.Provider value={this.state.value}>

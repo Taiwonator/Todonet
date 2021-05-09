@@ -1,0 +1,26 @@
+$tablet-width: 768px;
+
+@mixin tablet {
+  @media (max-width: #{$tablet-width}) {
+    @content;
+  }
+}
+
+
+.profile-stat {
+    text-align: center;
+    margin-left: 3em;
+
+    @include tablet() {
+        margin-left: 1em;
+    }
+
+    h3 {
+        font-size: 30px;
+        color: #FABA34;
+    }
+
+    p {
+        font-weight: 600;
+    }
+}

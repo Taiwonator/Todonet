@@ -16,7 +16,7 @@ class PleaseLoginPage extends Component {
        return ( 
          <div className="please-login-page-container" onClick={ () => this.directToLogin() } > 
            <Title header="Todonet."  
-                      headerColor="#993AEB"
+                      headerColor="#9639B3"
                       headerFontSize="70px"
                       subheader="Click anywhere to login" 
                       subheaderColor="black"

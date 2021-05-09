@@ -1,0 +1,55 @@
+.home-page-container {
+
+    .home-todos-container {
+        margin-top: 5vh;
+
+        .home-todo {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 2em;
+
+            .top-row {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                margin-bottom: .5em;
+
+                .profile-picture {
+                    height: 50px;
+                    width: 50px;
+                    margin-right: 1em;
+                }
+            }
+
+            .bottom-row {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+
+                p {
+                    font-weight: 600;
+                    font-size: 18px;
+
+                    span {
+                        color: blue;
+                    }
+                }
+                .right {
+                    display: flex;
+                    justify-content: flex-end;
+
+                    .home-buttons {
+                        display: flex;
+                        flex-direction: row;
+
+                        button {
+                            margin-left: 2em;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+}

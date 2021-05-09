@@ -16,6 +16,7 @@ import TopNav from '../../public/TopNav/TopNav';
 import SettingsPage from '../SettingsPage/SettingsPage';
 import { AuthConsumer } from '../../authContext';
 import PleaseLoginPage from '../PleaseLoginPage/PleaseLoginPage';
+import Delayed from '../../public/Delayed';
 
 
 class Wrapper extends Component {
@@ -50,7 +51,7 @@ class Wrapper extends Component {
    selectIcon = (icon) => this.setState(({ selected: icon }))
 
    render() {
-       if(this.props.auth.state.loggedIn) {
+       if(this.props.auth.state.app.loggedIn) {
         return ( 
             <Router>
             <TopNav isSelected={this.isSelected} selectIcon={this.selectIcon} routeToIcon={this.routeToIcon}/>
@@ -62,40 +63,56 @@ class Wrapper extends Component {
                          render={(props) => (
                              <AuthConsumer>
                                  {auth => (
-                                        <TodoPage {...props} auth={auth} todo_list={auth.state.todo_list}/>
+                                        <TodoPage {...props} auth={auth} todo_list={auth.state.todo.todo_list}/>
                                  )}
                              </AuthConsumer>
                          )} /> 
  
                          <Route path="/app/friends" 
                          render={(props) => (
-                             <FriendsPage {...props} />
+                             <AuthConsumer>
+                                 {auth => (
+                                     <FriendsPage {...props} 
+                                                      auth={auth}
+                                                      friends={auth.state.friends.friends_obj}
+                                                      users={auth.state.friends.users} 
+                                                      />
+                                 )}
+                             </AuthConsumer>
                          )} /> 
  
                          <Route path="/app/activities" 
                          render={(props) => (
-                             <ActivitiesPage {...props} />
+                            <AuthConsumer>
+                                { auth => (
+                                    <ActivitiesPage {...props} auth={auth} />
+                                )}
+                             </AuthConsumer>
                          )} /> 
  
                          <Route path="/app/profile" 
                          render={(props) => (
                              <AuthConsumer>
                                  {auth => (
-                                    <ProfilePage {...props} auth={auth}/>
+                                    <ProfilePage {...props} auth={auth} full_name={auth.state.app.full_name} todo_list={auth.state.todo.todo_list}/>
                                  )}
                              </AuthConsumer>
                          )} /> 
  
                          <Route path="/app/home" 
                          render={(props) => (
-                             <HomePage {...props} />
+                             <AuthConsumer>
+                                 {auth => (
+                                        <HomePage {...props} auth={auth} home_todos={auth.state.todo.home_todos} />
+                                 )}
+                             </AuthConsumer>
                          )} /> 
  
                          <Route path="/app/settings" 
                          render={(props) => (
                          <AuthConsumer>
                              { auth => (
-                                 <SettingsPage {...props} auth={auth}/>
+                                 <SettingsPage {...props} auth={auth} />
                              ) }
                          </AuthConsumer>
                          )} />

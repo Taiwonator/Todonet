@@ -58,7 +58,7 @@ class LoginPage extends Component {
             name: 'login_user', 
             email: this.state.email, 
             password: this.state.password, 
-            callback: () => setTimeout(() => this.openPage('/app'), 100 )
+            callback: () => setTimeout(() => this.openPage('/app'), 1000 )
         })
     }
 
@@ -87,6 +87,7 @@ class LoginPage extends Component {
                             onChange={this.handleEmailChange}
                             colors={ this.state.colors }
                             empty={ (this.state.email.length === 0) ? true  : false}
+                            icon={'user'}
                                 />
                         <Input type="Password"
                             placeholder="Password"
@@ -94,6 +95,7 @@ class LoginPage extends Component {
                             onChange={this.handlePasswordChange}
                             colors={ this.state.colors }
                             empty={ (this.state.password.length === 0) ? true  : false}
+                            icon={'key'}
                                 />
                         <Button text="LOG IN" 
                                 bgColor="#FABA34" 

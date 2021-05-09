@@ -1,7 +1,7 @@
 import React from 'react'
 import './Input.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCoffee } from '@fortawesome/free-solid-svg-icons'
+import { faCoffee, faSearch, faUser, faKey } from '@fortawesome/free-solid-svg-icons'
 
 function Input(props) {
 
@@ -24,9 +24,28 @@ function Input(props) {
         color: color
     }
 
+    let icon;
+    switch(props.icon) {
+        case 'mug': 
+            icon = <FontAwesomeIcon icon={faCoffee} color={ color }/>
+            break;
+        case 'search': 
+            icon = <FontAwesomeIcon icon={faSearch} color={ color }/>
+            break;
+        case 'key': 
+            icon = <FontAwesomeIcon icon={faKey} color={ color }/>
+            break;
+        case 'user':
+            icon = <FontAwesomeIcon icon={faUser} color={ color }/>
+            break;
+        default:
+            icon = <FontAwesomeIcon icon={faCoffee} color={ color }/>
+            break;
+    }
+
     return (
         <div className="input-container" style={inputContainerStyle}>
-            <FontAwesomeIcon icon={faCoffee} color={ color }/>
+            {icon}
             <input value={props.value} placeholder={props.placeholder} type={props.type} style={inputStyle} onChange={props.onChange} />
         </div>
     )

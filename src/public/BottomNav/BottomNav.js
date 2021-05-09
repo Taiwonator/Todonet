@@ -36,7 +36,7 @@ class BottomNav extends Component {
             <button onClick={ () => this.openPage("/app/friends", "search") }>
                 <FontAwesomeIcon icon={faSearch} color={ (this.props.isSelected('search') ? 'white': '#6F6F6F') } size="2x"/>
             </button>
-            <button style={ { backgroundColor: (this.props.isSelected('plus') ? '#993AEB': '#4e3b5f') } } onClick={ () => this.openPage("/app", "plus") }>
+            <button style={ { backgroundColor: (this.props.isSelected('plus') ? '#9639B3': '#3a0f47') } } onClick={ () => this.openPage("/app", "plus") }>
                 <FontAwesomeIcon icon={faPlusSquare} color={ (this.props.isSelected('plus') ? 'white': '#6F6F6F') } size="3x"/>
             </button>
             <button onClick={ () => this.openPage("/app/activities", "heart") }>

@@ -12,7 +12,7 @@ class SignupPage extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            fullname: '',
+            full_name: '',
             email: '', 
             password: '', 
             password2: '',
@@ -29,9 +29,9 @@ class SignupPage extends Component {
     }
 
     handleNameChange = (e) => {
-        const fullname = e.target.value;
+        const full_name = e.target.value;
         this.setState(prevState => ({
-          ...prevState, fullname
+          ...prevState, full_name
         }))
     }
 
@@ -67,7 +67,7 @@ class SignupPage extends Component {
             name: 'create_user', 
             email: this.state.email, 
             password: this.state.password, 
-            fullname: this.state.fullname, 
+            full_name: this.state.full_name, 
             callback: () => setTimeout(() => this.openPage('/app'), 1000 )
         })
     }
@@ -75,7 +75,7 @@ class SignupPage extends Component {
     render() {
         const passwordsMatch = (this.state.password === this.state.password2);
 
-        const inputsFilled = (this.state.fullname.length !== 0 &&
+        const inputsFilled = (this.state.full_name.length !== 0 &&
                               this.state.email.length !== 0 && 
                               this.state.password.length !== 0 &&
                               this.state.password2.length !== 0 && 
@@ -98,10 +98,10 @@ class SignupPage extends Component {
                 <form>
                     <Input type="text"
                         placeholder="Full Name"
-                        value={ this.state.fullname }
+                        value={ this.state.full_name }
                         onChange={this.handleNameChange}
                         colors={ this.state.colors }
-                        empty={ (this.state.fullname.length === 0) ? true  : false}
+                        empty={ (this.state.full_name.length === 0) ? true  : false}
                             />
                     <Input type="text"
                         placeholder="Email"
@@ -109,6 +109,7 @@ class SignupPage extends Component {
                         onChange={this.handleEmailChange}
                         colors={ this.state.colors }
                         empty={ (this.state.email.length === 0) ? true  : false}
+                        icon={'user'}
                             />
                     <Input type="Password"
                         placeholder="Password"
@@ -117,6 +118,7 @@ class SignupPage extends Component {
                         colors={ this.state.colors }
                         empty={ (this.state.password.length === 0) ? true  : false}
                         error={ !passwordsMatch }
+                        icon={'key'}
                             />
                     <Input type="Password"
                         placeholder="Confirm Password"
@@ -126,6 +128,7 @@ class SignupPage extends Component {
                         empty={ (this.state.password2.length === 0) ? true  : false}
                         error={ !passwordsMatch }
                         errorEnabled={true}
+                        icon={'key'}
                             />
                     <Button text="LOG IN" 
                             bgColor="#FABA34" 

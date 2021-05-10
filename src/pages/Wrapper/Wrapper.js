@@ -103,7 +103,7 @@ class Wrapper extends Component {
                          render={(props) => (
                              <AuthConsumer>
                                  {auth => (
-                                        <HomePage {...props} auth={auth} home_todos={auth.state.todo.home_todos} />
+                                        <HomePage {...props} auth={auth} home_todos={auth.state.friends.home_todos} />
                                  )}
                              </AuthConsumer>
                          )} /> 

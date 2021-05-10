@@ -9,7 +9,7 @@ class ActivitiesPage extends Component {
    constructor(props) {
     super(props);
     this.state = {
-       activity_todos: []
+       activity_todos: this.props.auth.state.friends.activity_todos
     }
    }
 
@@ -34,7 +34,7 @@ class ActivitiesPage extends Component {
                    subheaderFontSize="24px"
                    textAlign="left"
                     />
-            <ActivityList activity_todos={this.state.activity_todos} />
+            <ActivityList activity_todos={this.props.auth.state.friends.activity_todos} />
           </div>       
        )
    }
@@ -44,19 +44,22 @@ function Activity(props) {
 
    let color;
    let icon;
+   let label;
    if(props.nudge) {
       color = '#9639B3';
       icon = <FontAwesomeIcon icon={faHandPointRight} color='#9639B3' size="2x"/>
+      label = 'nudges you to';
    } else {
       color = '#FABA34';
       icon = <FontAwesomeIcon icon={faGlassCheers} color='#FABA34' size="2x"/>
+      label = 'celebrated';
    }
 
    return (
       <div className="activity">
          <div className="left">
             <ProfilePicture color={color} />
-            <p><span className='name' style={{ color }}>{props.full_name} </span>nudges you to <span className='text'>{props.text}</span></p>
+            <p><span className='name' style={{ color }}>{props.full_name} </span>{label} <span className='text'>{props.text}</span></p>
          </div>
          <div className="right">
              {icon}
@@ -66,6 +69,7 @@ function Activity(props) {
 }
 
 function ActivityList(props) {
+   console.log(props);
    const activity_todos = [...props.activity_todos];
    const list = activity_todos.map( (activity, i) => (
       <Activity key={i}

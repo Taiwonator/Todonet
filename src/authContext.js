@@ -33,11 +33,7 @@ export class AuthProvider extends Component {
                         user_id: ''
                     },
                 }, 
-                eventHandler: this.eventHandler, 
-                gets: {
-                    getTodosCompleted: this.getTodosCompleted, 
-                    getTodosActive: this.getTodosActive
-                }
+                eventHandler: this.eventHandler
              }
          }
         //  this.unsubscribe;
@@ -46,6 +42,18 @@ export class AuthProvider extends Component {
     componentWillUnmount() {
         if(this.unsubscribe) {
             this.unsubscribe();
+        }
+        if(this.todoListeners) {
+            const keys = Object.keys(this.todoListeners);
+            keys.forEach(key => {
+                this.todoListeners[key]();
+            })
+        }
+        if(this.friendListeners) {
+            const keys = Object.keys(this.friendListeners);
+            keys.forEach(key => {
+                this.friendListeners[key]();
+            })
         }
     }
 
@@ -142,6 +150,8 @@ export class AuthProvider extends Component {
 
     // login 
     loginUser = (email, password, callback) => {
+        this.todoListeners = {};
+        this.friendListeners  = {};
         app.auth().signInWithEmailAndPassword(email, password)
             .then((userCredential) => {
                 // Signed in
@@ -152,7 +162,21 @@ export class AuthProvider extends Component {
                 // Detect changes
                 this.unsubscribe = app.firestore().collection("users").doc(user.uid)
                     .onSnapshot((doc) => {
-                        this.getAllData(user, () => console.log('Something happened 👀'));
+                        console.log(doc.data());
+                        // this.getAllData(user, () => console.log('Change to my user profile, retrieved all data 👀'));
+                        this.setState((prevState) => ({
+                            value: {
+                                ...prevState.value, 
+                                state: { ...prevState.value.state,
+                                    friends: {
+                                        ...prevState.value.state.friends,
+                                        friend_request_received_ids: doc.data().friend_request_received_ids, 
+                                        friend_request_sent_ids: doc.data().friend_request_sent_ids, 
+                                        friend_ids: doc.data().friend_ids
+                                    }
+                                }
+                            }
+                        }), () => this.getAllData(user, () => console.log('Change to my user profile, retrieved all data 👀')))
                 });
                 
             })
@@ -162,6 +186,7 @@ export class AuthProvider extends Component {
                 console.log(errorMessage, errorCode);
             });
     }
+
 
     // logout 
     logoutUser = (callback) => {
@@ -199,40 +224,65 @@ export class AuthProvider extends Component {
 
     getUserData = (user, callback) => {
         app.firestore().collection('users').doc(user.uid).get().then(doc => {
-            const userDetails = doc.data();
-            let todo_list = [];
+            // const userDetails = doc.data();
+            // let todo_list = [];
 
-            // Get todos
-            if(userDetails) {
-                userDetails.todo_ids.forEach( todo => {
-                    app.firestore().collection('todos').doc(todo).get().then(doc => {
-                        todo_list.push(doc.data());
-                    })
-                })
-            }
+            // // Get todos
+            // if(userDetails) {
+            //     userDetails.todo_ids.forEach( todo => {
+            //         app.firestore().collection('todos').doc(todo).get().then(doc => {
+            //             todo_list.push(doc.data());
+            //         })
+            //     })
+            // }
 
 
-            this.setState((prevState) => ({
-                value: {
-                    ...prevState.value, 
-                    state: { ...prevState.value.state, 
+            // this.setState((prevState) => ({
+            //     value: {
+            //         ...prevState.value, 
+            //         state: { ...prevState.value.state, 
 
-                             todo: {
-                                ...prevState.value.state.todo,
-                                todo_list, 
-                                todo_ids: userDetails.todo_ids,
-                             },
+            //                  todo: {
+            //                     ...prevState.value.state.todo,
+            //                     todo_list, 
+            //                     todo_ids: userDetails.todo_ids,
+            //                  },
 
-                             app: {
-                                ...prevState.value.state.app,
-                                loggedIn: true, 
-                                user, 
-                                full_name: userDetails.full_name
-                             }
+            //                  app: {
+            //                     ...prevState.value.state.app,
+            //                     loggedIn: true, 
+            //                     user, 
+            //                     full_name: userDetails.full_name
+            //                  }
 
+            //         }
+            //     }
+            // }), () => { callback(); })
+
+            const todo_ids = doc.data().todo_ids;
+            this.getTodos(user.uid, todo_ids, (todo_list) => {
+                this.setState((prevState) => ({
+                    value: {
+                        ...prevState.value, 
+                        state: { ...prevState.value.state, 
+    
+                                 todo: {
+                                    ...prevState.value.state.todo,
+                                    todo_list, 
+                                    todo_ids
+                                 },
+    
+                                 app: {
+                                    ...prevState.value.state.app,
+                                    loggedIn: true, 
+                                    user, 
+                                    full_name: doc.data().full_name
+                                 }
+    
+                        }
                     }
-                }
-            }), () => { callback(); })
+                }), () => { callback(); })
+            })
         })
     }
 
@@ -242,7 +292,11 @@ export class AuthProvider extends Component {
         // get friends -> generate 
         // get friend requests (friends page)
         // get all users (friends page)
-        this.getUserData(user,  () => this.getFriendData(callback));
+        this.getUserData(user,  () => this.getFriendData(() => {
+            this.generateHomeTodos(() => true);
+            this.generateActivityTodos(() => true);
+            callback();
+        }));
     }
 
 
@@ -279,13 +333,41 @@ export class AuthProvider extends Component {
         }
     }
 
-    getTodos = (todo_ids, callback) => {
+    getTodos = (user_id, todo_ids, callback) => {
         let todos = []
         todo_ids.forEach(todo_id => {
             app.firestore().collection('todos').doc(todo_id).get().then(doc => {
                 todos.push(doc.data())
             })
         })
+        // Track todos
+        todo_ids.forEach(todo_id => {
+            if(this.todoListeners[todo_id] == null) {
+                this.todoListeners[todo_id] = app.firestore().collection('todos').doc(todo_id).onSnapshot((querySnapshot) => {
+                    // update friend's todolist
+                    console.log(`update ${user_id} todolist`);
+                    this.setState((prevState) => ({
+                        value: {
+                            ...prevState.value, 
+                            state: { ...prevState.value.state, 
+                                        friends: {
+                                            ...prevState.value.state.friends, 
+                                            friends_obj: {
+                                                ...prevState.value.state.friends.friends_obj, 
+                                                [user_id]: {
+                                                    ...prevState.value.state.friends.friends_obj[user_id],
+                                                    full_name: 'hello', 
+                                                    todo_list: todos
+                                                }
+                                            }  
+                                            
+                                        }
+                                   }
+                        }
+                    }), () => this.getAllData(this.state.value.state.app.user, () => console.log('Friend todo changed, retrieved all data 👀')))
+                })
+            }
+        });
         callback(todos);
     }
 
@@ -305,6 +387,11 @@ export class AuthProvider extends Component {
     addTodoItem = (text, callback) => {
         let ref = app.firestore().collection('todos').doc();
         const data = this.newTodo(text, ref.id, this.state.value.state.app.full_name);
+
+        // this.todoListeners[ref.id] = app.firestore().collection('todos').doc(ref.id).onSnapshot((querySnapshot) => {
+        //     this.getAllData(this.state.value.state.app.user, () => console.log('Listening to new todo 👀'));
+        // })
+
         ref.set(data).then(() => {
             app.firestore().collection('users').doc(this.state.value.state.app.user.uid).update('todo_ids', [...this.state.value.state.todo.todo_ids, ref.id])
             this.setState((prevState) => ({
@@ -342,7 +429,13 @@ export class AuthProvider extends Component {
             this.setState((prevState) => ({
                 value: {
                     ...prevState.value, 
-                    state: { ...prevState.value.state, todo_list }
+                    state: { 
+                        ...prevState.value.state, 
+                            todo: {
+                                ...prevState.value.state.todo,
+                                todo_list 
+                                }
+                        }
                 }
             }), () => callback())
 
@@ -350,6 +443,8 @@ export class AuthProvider extends Component {
     }
 
     deleteTodoItem = (todo_id, callback) => {
+        // this.todoListeners[todo_id]();
+
         app.firestore().collection('todos').doc(todo_id).delete().then(() => {
             app.firestore().collection('users').doc(this.state.value.state.app.user.uid).get().then((doc) => {
                 const todo_ids_list = doc.data().todo_ids;
@@ -392,7 +487,6 @@ export class AuthProvider extends Component {
                 }
                 return todo;
             })
-            console.log(todo_list)
             this.setState((prevState) => ({
                 value: {
                     ...prevState.value, 
@@ -401,16 +495,6 @@ export class AuthProvider extends Component {
             }), () => callback())
 
         })
-    }
-
-    getTodosCompleted = () => {
-        let todos = this.state.value.state.todo.todo_list.filter(todo => todo.marked == true);
-        return todos.length;
-    }
-
-    getTodosActive = () => {
-        let todos = this.state.value.state.todo.todo_list.filter(todo => todo.marked == false);
-        return todos.length;
     }
 
 
@@ -491,8 +575,10 @@ export class AuthProvider extends Component {
     }
 
     getFriendData = (callback) => {
-        this.getFriends(callback);
-        this.getFriendRequests(() => this.getUsers(() => console.log("gotten users")));
+        this.getFriends(() => { 
+            this.getFriendRequests(() => this.getUsers((callback)));
+            console.log('friends retreived')
+        });  
     }
     
     getUsers = (callback) => {
@@ -501,6 +587,7 @@ export class AuthProvider extends Component {
             querySnapshot.forEach(doc => {
 
                 const friends_ids = Object.keys(this.state.value.state.friends.friends_obj);
+                console.log(friends_ids.length);
 
                 const userObj = {
                     user_id: doc.data().user_id, 
@@ -527,43 +614,49 @@ export class AuthProvider extends Component {
         })
     }
 
+
+
     getFriends = (callback) => {
         app.firestore().collection('users').doc(this.state.value.state.app.user.uid).get().then((doc) => {
             const friend_ids = doc.data().friend_ids;
-            this.friendListeners  = {};
+            
+            let friends_obj = {}
             friend_ids.forEach(id => {
+
                 app.firestore().collection('users').doc(id).get().then((friend) => {
 
-                    this.friendListeners[id] = app.firestore().collection("users").doc(id)
-                        .onSnapshot((doc) => {
-                            // this.getAllData(this.state.value.state.app.user.uid, () => console.log('Friend account changed 👀'));
-                            console.log('friend profile changed');
-                    });
-
-                    this.getTodos(friend.data().todo_ids, (todo_list) => {
-                        this.setState((prevState) => ({
-                            value: {
-                                ...prevState.value, 
-                                state: { ...prevState.value.state, 
-                                            friends: {
-                                                ...prevState.value.state.friends,
-                                                friends_obj: {
-                                                    ...prevState.value.state.friends.friends_obj,
-                                                    [friend.data().user_id]: {
-                                                        full_name: friend.data().full_name, 
-                                                        todo_list, 
-                                                        user_id: friend.data().user_id
-                                                    }
-                                                }
-                                            }
-                                       }
-                            }
-                        }))
-
+                    this.getTodos(id, friend.data().todo_ids, (todo_list) => {
+                        friends_obj[friend.data().user_id] = {
+                            full_name: friend.data().full_name, 
+                            todo_list, 
+                            user_id: friend.data().user_id
+                        }
                     })
                 })
-
             })
+            this.setState((prevState) => ({
+                value: {
+                    ...prevState.value, 
+                    state: { ...prevState.value.state, 
+                                friends: {
+                                    ...prevState.value.state.friends,
+                                    friends_obj
+                                    
+                                }
+                           }
+                }
+            }), () => callback())
+
+            friend_ids.forEach(friend_id => {
+                if(this.friendListeners[friend_id] == null) {
+                    this.friendListeners[friend_id] = app.firestore().collection('users').doc(friend_id).onSnapshot((querySnapshot) => {
+                        // update friend's profile
+                        console.log(`update ${friend_id} profile`);
+                        this.getAllData(this.state.value.state.app.user, () => console.log('Change to my user profile, retrieved all data 👀'))
+                    })
+                }
+            })
+
         }).then(() => callback()) 
     }
 
@@ -618,16 +711,16 @@ export class AuthProvider extends Component {
 
     sendFriendRequest = (friend_id, callback) => {
         this.addToRequests(friend_id, this.state.value.state.app.user.uid)
-        this.addToSents(this.state.value.state.app.user.uid, friend_id)
+        this.addToSents(this.state.value.state.app.user.uid, friend_id, () => true)
         callback();
     }
 
     acceptFriendRequest = (user_id, callback) => {
         // Remove from user requests
-        this.removeFromRequests(this.state.value.state.app.user.uid, user_id)
+        this.removeFromRequests(this.state.value.state.app.user.uid, user_id, () => true)
 
         // // Add to user's friends
-        this.addToFriends(this.state.value.state.app.user.uid, user_id)
+        this.addToFriends(this.state.value.state.app.user.uid, user_id, () => true)
 
         // // Remove from user sends
         this.removeFromSents(user_id, this.state.value.state.app.user.uid)
@@ -640,13 +733,14 @@ export class AuthProvider extends Component {
 
     removeFriend = (user_id, callback) => {
         this.removeFromFriends(user_id, this.state.value.state.app.user.uid);
-        this.removeFromFriends(this.state.value.state.app.user.uid, user_id);
+        this.removeFromFriends(this.state.value.state.app.user.uid, user_id, () => true);
+        
         callback();
     }
 
     declineFriendRequest = (user_id, callback) => {
         // Remove from user requests
-        this.removeFromRequests(this.state.value.state.app.user.uid, user_id)
+        this.removeFromRequests(this.state.value.state.app.user.uid, user_id, () => true)
 
         // // Remove from user sends
         this.removeFromSents(user_id, this.state.value.state.app.user.uid)
@@ -655,62 +749,86 @@ export class AuthProvider extends Component {
     }
 
     // Add to requests
-    addToRequests = (doc_id, user_id) => {
+    addToRequests = (doc_id, user_id, callback) => {
         app.firestore().collection('users').doc(doc_id).get().then(doc => {
             let friend_request_received_ids = doc.data().friend_request_received_ids;
             friend_request_received_ids.push(user_id);
             friend_request_received_ids = [ ...new Set(friend_request_received_ids) ];
             doc.ref.update('friend_request_received_ids', friend_request_received_ids);
+        }).then(() => {
+            if(callback) {
+                callback();
+            }
         })
     }
 
     // Remove from request
-    removeFromRequests = (doc_id, user_id) => {
+    removeFromRequests = (doc_id, user_id, callback) => {
         app.firestore().collection('users').doc(doc_id).get().then(doc => {
             let friend_request_received_ids = doc.data().friend_request_received_ids;
             friend_request_received_ids = friend_request_received_ids.filter( request => request != user_id );
             friend_request_received_ids = [ ...new Set(friend_request_received_ids) ];
             doc.ref.update('friend_request_received_ids', friend_request_received_ids);
+        }).then(() => {
+            if(callback) {
+                callback();
+            }
         })
     }
 
     // Add to friends
-    addToFriends = (doc_id, user_id) => {
+    addToFriends = (doc_id, user_id, callback) => {
         app.firestore().collection('users').doc(doc_id).get().then(doc => {
             let friend_ids = doc.data().friend_ids;
             friend_ids.push(user_id);
             friend_ids = [ ...new Set(friend_ids) ];
             doc.ref.update('friend_ids', friend_ids);
+        }).then(() => {
+            if(callback) {
+                callback();
+            }
         })
     }
 
     // Remove from friends
-    removeFromFriends = (doc_id, user_id) => {
+    removeFromFriends = (doc_id, user_id, callback) => {
         app.firestore().collection('users').doc(doc_id).get().then(doc => {
             let friend_ids = doc.data().friend_ids;
             friend_ids = friend_ids.filter(id => id != user_id)
             friend_ids = [ ...new Set(friend_ids) ];
             doc.ref.update('friend_ids', friend_ids);
+        }).then(() => {
+            if(callback) {
+                callback();
+            }
         })
     }
 
     // Add to sents
-    addToSents = (doc_id, user_id) => {
+    addToSents = (doc_id, user_id, callback) => {
         app.firestore().collection('users').doc(doc_id).get().then(doc => {
             let friend_request_sent_ids = doc.data().friend_request_sent_ids;
             friend_request_sent_ids.push(user_id);
             friend_request_sent_ids = [ ...new Set(friend_request_sent_ids) ];
             doc.ref.update('friend_request_sent_ids', friend_request_sent_ids);
+        }).then(() => {
+            if(callback) {
+                callback();
+            }
         })
     }
 
     // Remove from sents
-    removeFromSents = (doc_id, user_id) => {
+    removeFromSents = (doc_id, user_id, callback) => {
         app.firestore().collection('users').doc(doc_id).get().then(doc => {
             let friend_request_sent_ids = doc.data().friend_request_sent_ids;
             friend_request_sent_ids = friend_request_sent_ids.filter( request => request != user_id );
             friend_request_sent_ids = [ ...new Set(friend_request_sent_ids) ];
             doc.ref.update('friend_request_sent_ids', friend_request_sent_ids);
+        }).then(() => {
+            if(callback) {
+                callback();
+            }
         })
     }
 
@@ -720,6 +838,10 @@ export class AuthProvider extends Component {
             nudges.push(user_id);
             nudges = [ ...new Set(nudges) ];
             doc.ref.update('nudges', nudges);
+        }).then(() => {
+            if(callback) {
+                callback();
+            }
         })
     }
 
@@ -729,6 +851,10 @@ export class AuthProvider extends Component {
             nudges = nudges.filter( request => request != user_id );
             nudges = [ ...new Set(nudges) ];
             doc.ref.update('nudges', nudges);
+        }).then(() => {
+            if(callback) {
+                callback();
+            }
         })
     }
 
@@ -738,6 +864,10 @@ export class AuthProvider extends Component {
             celebrations.push(user_id);
             celebrations = [ ...new Set(celebrations) ];
             doc.ref.update('celebrations', celebrations);
+        }).then(() => {
+            if(callback) {
+                callback();
+            }
         })
     }
 
@@ -747,6 +877,10 @@ export class AuthProvider extends Component {
             celebrations = celebrations.filter( request => request != user_id );
             celebrations = [ ...new Set(celebrations) ];
             doc.ref.update('celebrations', celebrations);
+        }).then(() => {
+            if(callback) {
+                callback();
+            }
         })
     }
 
@@ -758,7 +892,6 @@ export class AuthProvider extends Component {
         const friend_ids = Object.keys(friends);
         let max = 0;
         friend_ids.forEach( friend_id => {
-            console.log('friends[friend_id]', friends[friend_id].todo_list.full_name);
             if(friends[friend_id].todo_list.length > max) {
                 max = friends[friend_id].todo_list.length;
             }
@@ -800,6 +933,7 @@ export class AuthProvider extends Component {
             // Add friend.name, todo.text, nudge bool
             const nudges = todo.nudges;
             nudges.forEach( id => {
+                console.log(this.state.value.state.friends.friends_obj);
                 const full_name = this.state.value.state.friends.friends_obj[id].full_name;
                 const text = todo.text;
                 const nudge = true;
@@ -832,7 +966,7 @@ export class AuthProvider extends Component {
 
 
 
-
+    // FRIENDS TRACK 
 
 
 

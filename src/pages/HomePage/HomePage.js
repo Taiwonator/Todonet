@@ -10,7 +10,7 @@ class HomePage extends Component {
    constructor(props) {
     super(props);
     this.state = {
-      home_todos: []
+      home_todos: this.props.auth.state.friends.home_todos
     }
    }
 
@@ -52,7 +52,9 @@ class HomePage extends Component {
       type: 'FRIENDS', 
       name: 'nudge_friend', 
       todo_id,
-      callback: () => console.log('add to nudges')
+      callback: () => this.setState({
+        home_todos: this.props.auth.state.friends.home_todos
+      })
     });
    }
 
@@ -78,7 +80,9 @@ class HomePage extends Component {
       type: 'FRIENDS', 
       name: 'celebrate_friend', 
       todo_id,
-      callback: () => console.log('add to celebrate')
+      callback: () => this.setState({
+        home_todos: this.props.auth.state.friends.home_todos
+      })
     });
    }
 
@@ -103,7 +107,9 @@ class HomePage extends Component {
       type: 'FRIENDS', 
       name: 'remove_nudge_friend', 
       todo_id,
-      callback: () => console.log('removed from nudges')
+      callback: () => this.setState({
+        home_todos: this.props.auth.state.friends.home_todos
+      })
     });
    }
 
@@ -128,7 +134,9 @@ class HomePage extends Component {
       type: 'FRIENDS', 
       name: 'remove_celebrate_friend', 
       todo_id,
-      callback: () => console.log('removed from celebrate')
+      callback: () => this.setState({
+        home_todos: this.props.auth.state.friends.home_todos
+      })
     });
    }
 
@@ -145,7 +153,7 @@ class HomePage extends Component {
                     />
             {/* <Delayed waitBeforeShow={300}> */}
               <HomeTodoList 
-                            home_todos={this.state.home_todos} 
+                            home_todos={this.props.auth.state.friends.home_todos} 
                             // showIntrest={this.showIntrest}
                             nudge={this.nudge}
                             celebrate={this.celebrate}
@@ -161,7 +169,6 @@ class HomePage extends Component {
 }
 
 function HomeTodoList(props) {
-console.log(props);
   const homeTodos = props.home_todos.map( (todo, i) => (
     <HomeTodo           key={i}
                         todo={todo}  

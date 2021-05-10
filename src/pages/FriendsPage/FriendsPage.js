@@ -88,7 +88,11 @@ class FriendsPage extends Component {
       type: 'FRIENDS', 
       name: 'remove_friend', 
       user_id,
-      callback: () => console.log("Friend removed")
+      callback: () => { console.log('user removed'); this.setState(prevState => ({
+                                                      ...prevState, 
+                                                      profile: false
+                                                    }))
+                                                  }
     });
   }
 

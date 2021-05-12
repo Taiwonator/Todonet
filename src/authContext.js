@@ -39,6 +39,12 @@ export class AuthProvider extends Component {
         //  this.unsubscribe;
     }
 
+    componentDidMount() {
+        this.todoListeners = {};
+        this.friendListeners  = {};
+        this.getCurrentUser();
+    }
+
     componentWillUnmount() {
         if(this.unsubscribe) {
             this.unsubscribe();
@@ -113,6 +119,8 @@ export class AuthProvider extends Component {
 
     // create account 
     createUser = (full_name, email, password, callback) => {
+        this.todoListeners = {};
+        this.friendListeners  = {};
         app.auth().createUserWithEmailAndPassword(email, password)
             .then((userCredential) => {
                 // Signed in 
@@ -122,13 +130,27 @@ export class AuthProvider extends Component {
                     this.setState((prevState) => ({
                         value: {
                             ...prevState.value, 
-                            state: { ...prevState.value.state,
+                            state: { 
                                         app: {
                                             ...prevState.value.state.app, 
                                             loggedIn: true, 
                                             user, 
                                             full_name
-                                        }
+                                        },
+                                        todo: {
+                                            todo_ids: [], 
+                                            todo_list: [], 
+                                        }, 
+                                        friends: {
+                                            users: [],
+                                            friends_obj: {}, 
+                                            home_todos: [],
+                                            activity_todos: [],
+                    
+                                            full_name: 'steve', 
+                                            todo_list: [], 
+                                            user_id: ''
+                                        },
                                         
                                    }
                                 }
@@ -150,34 +172,13 @@ export class AuthProvider extends Component {
 
     // login 
     loginUser = (email, password, callback) => {
-        this.todoListeners = {};
-        this.friendListeners  = {};
         app.auth().signInWithEmailAndPassword(email, password)
             .then((userCredential) => {
                 // Signed in
                 var user = userCredential.user;
                 // Loads user data, todos and friends
-                this.getAllData(user, () => { this.callAlert('Log in successful'); callback() })
-
-                // Detect changes
-                this.unsubscribe = app.firestore().collection("users").doc(user.uid)
-                    .onSnapshot((doc) => {
-                        console.log(doc.data());
-                        // this.getAllData(user, () => console.log('Change to my user profile, retrieved all data 👀'));
-                        this.setState((prevState) => ({
-                            value: {
-                                ...prevState.value, 
-                                state: { ...prevState.value.state,
-                                    friends: {
-                                        ...prevState.value.state.friends,
-                                        friend_request_received_ids: doc.data().friend_request_received_ids, 
-                                        friend_request_sent_ids: doc.data().friend_request_sent_ids, 
-                                        friend_ids: doc.data().friend_ids
-                                    }
-                                }
-                            }
-                        }), () => this.getAllData(user, () => console.log('Change to my user profile, retrieved all data 👀')))
-                });
+                this.callAlert('User successfully created');
+                this.initUser(user, callback);
                 
             })
             .catch((error) => {
@@ -185,6 +186,30 @@ export class AuthProvider extends Component {
                 var errorMessage = error.message;
                 console.log(errorMessage, errorCode);
             });
+    }
+
+    initUser = (user, callback) => {
+        this.getAllData(user, () =>  callback())
+
+        // Detect changes
+        this.unsubscribe = app.firestore().collection("users").doc(user.uid)
+            .onSnapshot((doc) => {
+                console.log(doc.data());
+                // this.getAllData(user, () => console.log('Change to my user profile, retrieved all data 👀'));
+                this.setState((prevState) => ({
+                    value: {
+                        ...prevState.value, 
+                        state: { ...prevState.value.state,
+                            friends: {
+                                ...prevState.value.state.friends,
+                                friend_request_received_ids: doc.data().friend_request_received_ids, 
+                                friend_request_sent_ids: doc.data().friend_request_sent_ids, 
+                                friend_ids: doc.data().friend_ids
+                            }
+                        }
+                    }
+                }), () => this.getAllData(user, () => console.log('Change to my user profile, retrieved all data 👀')))
+        });
     }
 
 
@@ -196,12 +221,13 @@ export class AuthProvider extends Component {
             this.setState((prevState) => ({
                 value: {
                     ...prevState.value, 
-                    state: { ...prevState.value.state,
+                    state: {
                         app: {
                             ...prevState.value.state.app, 
                             loggedIn: false, 
-                            user: ''
-                        } 
+                            user: '', 
+                            full_name: ''
+                        }
                     }
                 }
             }), () => callback())
@@ -213,9 +239,10 @@ export class AuthProvider extends Component {
 
     // get current user 
     getCurrentUser = () => {
-        app.auth().onAuthStateChanged(function(user) {
+        app.auth().onAuthStateChanged((user) => {
         if (user) {
-            console.log(user);
+            this.initUser(user, () => console.log('page was reloaded'))
+
         } else {
             console.log('no user');
         }
@@ -224,41 +251,6 @@ export class AuthProvider extends Component {
 
     getUserData = (user, callback) => {
         app.firestore().collection('users').doc(user.uid).get().then(doc => {
-            // const userDetails = doc.data();
-            // let todo_list = [];
-
-            // // Get todos
-            // if(userDetails) {
-            //     userDetails.todo_ids.forEach( todo => {
-            //         app.firestore().collection('todos').doc(todo).get().then(doc => {
-            //             todo_list.push(doc.data());
-            //         })
-            //     })
-            // }
-
-
-            // this.setState((prevState) => ({
-            //     value: {
-            //         ...prevState.value, 
-            //         state: { ...prevState.value.state, 
-
-            //                  todo: {
-            //                     ...prevState.value.state.todo,
-            //                     todo_list, 
-            //                     todo_ids: userDetails.todo_ids,
-            //                  },
-
-            //                  app: {
-            //                     ...prevState.value.state.app,
-            //                     loggedIn: true, 
-            //                     user, 
-            //                     full_name: userDetails.full_name
-            //                  }
-
-            //         }
-            //     }
-            // }), () => { callback(); })
-
             const todo_ids = doc.data().todo_ids;
             this.getTodos(user.uid, todo_ids, (todo_list) => {
                 this.setState((prevState) => ({
@@ -340,31 +332,36 @@ export class AuthProvider extends Component {
                 todos.push(doc.data())
             })
         })
+        
+        let friends_obj = {}
+        
         // Track todos
         todo_ids.forEach(todo_id => {
             if(this.todoListeners[todo_id] == null) {
                 this.todoListeners[todo_id] = app.firestore().collection('todos').doc(todo_id).onSnapshot((querySnapshot) => {
                     // update friend's todolist
                     console.log(`update ${user_id} todolist`);
-                    this.setState((prevState) => ({
-                        value: {
-                            ...prevState.value, 
-                            state: { ...prevState.value.state, 
-                                        friends: {
-                                            ...prevState.value.state.friends, 
-                                            friends_obj: {
-                                                ...prevState.value.state.friends.friends_obj, 
-                                                [user_id]: {
-                                                    ...prevState.value.state.friends.friends_obj[user_id],
-                                                    full_name: 'hello', 
-                                                    todo_list: todos
-                                                }
-                                            }  
-                                            
-                                        }
-                                   }
-                        }
-                    }), () => this.getAllData(this.state.value.state.app.user, () => console.log('Friend todo changed, retrieved all data 👀')))
+                    if(this.state.value.state.friends.friends_obj) {
+                        this.setState((prevState) => ({
+                            value: {
+                                ...prevState.value, 
+                                state: { ...prevState.value.state, 
+                                            friends: {
+                                                ...prevState.value.state.friends, 
+                                                friends_obj: {
+                                                    ...prevState.value.state.friends.friends_obj, 
+                                                    [user_id]: {
+                                                        ...prevState.value.state.friends.friends_obj[user_id],
+                                                        full_name: 'hello', 
+                                                        todo_list: todos
+                                                    }
+                                                }  
+                                                
+                                            }
+                                    }
+                            }
+                        }), () => this.getAllData(this.state.value.state.app.user, () => console.log('Friend todo changed, retrieved all data 👀')))
+                    }
                 })
             }
         });
@@ -542,6 +539,9 @@ export class AuthProvider extends Component {
             case 'send_friend_request':
                 this.sendFriendRequest(event.user_id, event.callback)
                 break;
+            case 'unsend_friend_request':
+                this.unsendFriendRequest(event.user_id, event.callback)
+                break;
             case 'accept_friend_request':
                 this.acceptFriendRequest(event.user_id, event.callback)
                 break;
@@ -624,14 +624,16 @@ export class AuthProvider extends Component {
             friend_ids.forEach(id => {
 
                 app.firestore().collection('users').doc(id).get().then((friend) => {
-
-                    this.getTodos(id, friend.data().todo_ids, (todo_list) => {
-                        friends_obj[friend.data().user_id] = {
-                            full_name: friend.data().full_name, 
-                            todo_list, 
-                            user_id: friend.data().user_id
-                        }
-                    })
+                    if(friend) {
+                        console.log(friend.data())
+                        this.getTodos(id, friend.data().todo_ids, (todo_list) => {
+                            friends_obj[friend.data().user_id] = {
+                                full_name: friend.data().full_name, 
+                                todo_list, 
+                                user_id: friend.data().user_id
+                            }
+                        })
+                    }
                 })
             })
             this.setState((prevState) => ({
@@ -712,6 +714,12 @@ export class AuthProvider extends Component {
     sendFriendRequest = (friend_id, callback) => {
         this.addToRequests(friend_id, this.state.value.state.app.user.uid)
         this.addToSents(this.state.value.state.app.user.uid, friend_id, () => true)
+        callback();
+    }
+
+    unsendFriendRequest = (friend_id, callback) => {
+        this.removeFromRequests(friend_id, this.state.value.state.app.user.uid)
+        this.removeFromSents(this.state.value.state.app.user.uid, friend_id, () => true)
         callback();
     }
 
@@ -929,12 +937,14 @@ export class AuthProvider extends Component {
     generateActivityTodos = (callback) => {
         let list = []
         const todo_list = this.state.value.state.todo.todo_list;
+        console.log(this.state.value.state.friends);
         todo_list.forEach( todo => {
             // Add friend.name, todo.text, nudge bool
             const nudges = todo.nudges;
             nudges.forEach( id => {
-                console.log(this.state.value.state.friends.friends_obj);
-                const full_name = this.state.value.state.friends.friends_obj[id].full_name;
+                let user = this.state.value.state.friends.users.find( user => user.user_id == id )
+
+                const full_name = user.full_name;
                 const text = todo.text;
                 const nudge = true;
                 list.push({ full_name, text, nudge })
@@ -942,7 +952,9 @@ export class AuthProvider extends Component {
 
             const celebrations = todo.celebrations;
             celebrations.forEach( id => {
-                const full_name = this.state.value.state.friends.friends_obj[id].full_name;
+                let user = this.state.value.state.friends.users.find( user => user.user_id == id )
+
+                const full_name = user.full_name;
                 const text = todo.text;
                 const nudge = false;
                 list.push({ full_name, text, nudge })

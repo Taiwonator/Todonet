@@ -58,7 +58,7 @@ class LoginPage extends Component {
             name: 'login_user', 
             email: this.state.email, 
             password: this.state.password, 
-            callback: () => setTimeout(() => this.openPage('/app'), 1000 )
+            callback: () => setTimeout(() => this.openPage('/app'), 100 )
         })
     }
 

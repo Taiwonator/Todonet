@@ -103,7 +103,7 @@ class Wrapper extends Component {
                          render={(props) => (
                              <AuthConsumer>
                                  {auth => (
-                                        <HomePage {...props} auth={auth} home_todos={auth.state.friends.home_todos} />
+                                        <HomePage {...props} auth={auth} />
                                  )}
                              </AuthConsumer>
                          )} /> 
@@ -125,7 +125,9 @@ class Wrapper extends Component {
         )
        } else {
            return (
-               <PleaseLoginPage />
+               <Delayed waitBeforeShow={1000}>
+                    <PleaseLoginPage />
+               </Delayed>
            )
        }
        

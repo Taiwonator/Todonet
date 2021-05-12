@@ -65,6 +65,15 @@ class FriendsPage extends Component {
     });
   }
 
+  unsendFriendRequest = (user_id) => {
+    this.props.auth.eventHandler({
+      type: 'FRIENDS', 
+      name: 'unsend_friend_request', 
+      user_id,
+      callback: () => console.log("Send reverted")
+    });
+  }
+
   acceptFriendRequest = (user_id) => {
     this.props.auth.eventHandler({
       type: 'FRIENDS', 
@@ -138,7 +147,8 @@ class FriendsPage extends Component {
                         selectUser={this.selectUser}
                         sendFriendRequest={this.sendFriendRequest}
                         acceptFriendRequest={this.acceptFriendRequest}
-                        declineFriendRequest={this.declineFriendRequest}/>
+                        declineFriendRequest={this.declineFriendRequest}
+                        unsendFriendRequest={this.unsendFriendRequest}/>
          </div>       
        )
       } else {
@@ -187,6 +197,7 @@ function FriendList(props) {
                 sendFriendRequest={() => props.sendFriendRequest(user.user_id)}
                 acceptFriendRequest={() => props.acceptFriendRequest(user.user_id)}
                 declineFriendRequest={() => props.declineFriendRequest(user.user_id)}
+                unsendFriendRequest={() => props.unsendFriendRequest(user.user_id)}
                 />
       )
     }))
@@ -226,7 +237,7 @@ function Friend(props) {
                           textColor="#FABA34" 
                           textAlign="center"
                           borderColor="#FABA34"
-                          onClick={ () => console.log("Request already sent") } /> 
+                          onClick={ props.unsendFriendRequest } /> 
                           : (props.requestReceived) ? <div className="friend-buttons">
                                                           <button onClick={ props.acceptFriendRequest } className="green"><FontAwesomeIcon icon={faCheck} color={ '#12E56E' }/></button>
                                                           <button onClick={ props.declineFriendRequest } className="red"><FontAwesomeIcon icon={faTimesCircle} color={ '#FF408E' }/></button>

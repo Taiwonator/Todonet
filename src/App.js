@@ -26,49 +26,33 @@ class App extends Component {
   render() {
 
     return (
-      <AuthProvider>
-
         <Router>
           
             <Switch>
 
               <Route exact path="/" 
                     render={(props) => (
-                      <LandingPage {...props} />
-                    )} />
+                      <LandingPage {...props} auth={this.props.auth} />
+              )} />
 
               <Route path="/app" 
                     render={(props) => (
-                      <AuthConsumer>
-                        { auth => (
-                          <AppProvider><Wrapper {...props} auth={auth} /></AppProvider>
-                        ) }
-                      </AuthConsumer>
-                    )} />  
+                        <Wrapper {...props} auth={this.props.auth} />
+                )} />  
 
                 <Route path="/login" 
                       render={(props) => (
-                        <AuthConsumer>
-                          { auth => (
-                            <LoginPage {...props} auth={auth} />
-                          ) }
-                        </AuthConsumer>
-                      )} />
+                            <LoginPage {...props} auth={this.props.auth} />
+                  )} />
 
                 <Route path="/signup" 
                       render={(props) => (
-                        <AuthConsumer>
-                          { auth => (
-                            <SignupPage {...props} auth={auth} />
-                          ) }
-                        </AuthConsumer>
-                      )} /> 
+                            <SignupPage {...props} auth={this.props.auth} />
+                  )} /> 
 
             </Switch>
 
         </Router>
-
-      </AuthProvider>
     );
   }
 }

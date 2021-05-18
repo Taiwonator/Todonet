@@ -31,6 +31,7 @@ class SettingsPage extends Component {
             />   
             <div className="settings-buttons-container">
                 <SettingsButton text="Get email" onClick={() => eventCall({ type: 'ANDROID', name: 'message', message: this.props.auth.state.app.user.email })} color={'black'}/>
+                <SettingsButton text="Go to native app" onClick={() => eventCall({ type: 'ANDROID', name: 'open_native_app'})} color={'black'}/>
                 <SettingsButton text="Logout" onClick={() => this.logoutUser()} color={'#9639B3'} noIcon={true} bold={true}/>
             </div>
           </div> 

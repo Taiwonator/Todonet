@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { withRouter } from 'react-router-dom';
+import { withRouter, Redirect } from 'react-router-dom';
 import './LoginPage.scss';
 import Illustration from '../../public/Illustration/Illustration';
 import Title from '../../public/Title/Title';
@@ -7,6 +7,7 @@ import Input from '../../public/Input/Input';
 import Button from '../../public/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { eventCall } from '../../controllers/EventHandler';
 
 class LoginPage extends Component {
     constructor(props) {
@@ -53,18 +54,21 @@ class LoginPage extends Component {
 
 
     loginUser() {
+
         this.props.auth.eventHandler({
             type: 'DETAILS', 
             name: 'login_user', 
             email: this.state.email, 
             password: this.state.password, 
-            callback: () => setTimeout(() => this.openPage('/app'), 100 )
+            callback: () => console.log('Logged in')
         })
     }
 
     render() {
         
         const inputsFilled = (this.state.email.length !== 0 && this.state.password.length !== 0)
+        
+        if(!this.props.auth.state.app.loggedIn) {
 
         return (
                     <div className="login-page-container">
@@ -108,6 +112,9 @@ class LoginPage extends Component {
                     </form>
                 </div>
         )
+        } else {
+            return <Redirect to={'/app'}/>
+        }
     }
 }
 

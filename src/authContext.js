@@ -188,7 +188,7 @@ export class AuthProvider extends Component {
                 })
 
                 // Loads user data, todos and friends
-                this.callAlert('User successfully created');
+                this.callAlert('Login successful');
                 this.initUser(user, callback);
                 
             })
@@ -228,6 +228,10 @@ export class AuthProvider extends Component {
     logoutUser = (callback) => {
         app.auth().signOut().then(() => {
             this.callAlert('Sign out successfull');
+            androidEventHandler({
+                type: "ANDROID", 
+                name: "open_landing_page"
+            })
 
             this.setState((prevState) => ({
                 value: {

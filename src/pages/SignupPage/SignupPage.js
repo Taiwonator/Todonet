@@ -130,7 +130,7 @@ class SignupPage extends Component {
                         errorEnabled={true}
                         icon={'key'}
                             />
-                    <Button text="LOG IN" 
+                    <Button text="CREATE ACCOUNT" 
                             bgColor="#FABA34" 
                             textColor="white" 
                             textAlign="center"

@@ -10,6 +10,9 @@ export function androidEventHandler(event) {
         case 'save_credentials':
             saveCredentials(event.email, event.password);
             break;
+        case 'open_landing_page':
+            openLandingPage();
+            break;
         default:
             break;
     }
@@ -35,7 +38,12 @@ function openNativeApp(email, password) {
     window.Android?.openNativeApp('Open native app', email, password);
 }
 
+function openLandingPage() {
+    alert("Opening landing page");
+    window.Android?.openLandingPage('Open landing page');
+}
+
 function saveCredentials(email, password) {
     alert("saving credentials on android");
-    window.Android?.openNativeApp('Storing', email, password);
+    window.Android?.saveCredentials('Storing', email, password);
 }
